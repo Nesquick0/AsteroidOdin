@@ -19,6 +19,7 @@ draw_options_menu :: proc(options_menu_state: ^OptionsMenuState, screen_width: i
     // Define buttons positions.
     buttons_positions := [i32(OptionsMenuButton.Count)]MenuButtonWithText{
         {"Draw distance", rl.Rectangle{f32(screen_width)/2-250, f32(screen_height)/2, 0, 0}},
+        {"Mouse speed", rl.Rectangle{f32(screen_width)/2-250, f32(screen_height)/2+50, 0, 0}},
         {"Back", rl.Rectangle{f32(screen_width)/2-50, f32(screen_height)-100, 0, 0}},
     }
     // Update buttons size.
@@ -52,16 +53,31 @@ draw_options_menu :: proc(options_menu_state: ^OptionsMenuState, screen_width: i
         rl.DrawText(buttons_positions[i].text, i32(buttons_positions[i].rect.x), i32(buttons_positions[i].rect.y), 50, rl.WHITE)
     }
 
-    // Draw slider.
-    new_view_distance : f32 = options_menu_state.draw_distance
-    min_view_distance : f32 = 1_000.0
-    max_view_distance : f32 = 10_000.0
-    left_slider_text := fmt.aprint(min_view_distance)
-    right_slider_text := fmt.aprint(max_view_distance)
-    selected_values := rl.GuiSlider(rl.Rectangle{f32(screen_width)/2, f32(screen_height)/2, 300, 50},
-        strings.clone_to_cstring(left_slider_text, context.temp_allocator), strings.clone_to_cstring(right_slider_text, context.temp_allocator),
-        &new_view_distance, 1_000.0, 10_000.0)
-    options_menu_state.draw_distance = new_view_distance
+    // Draw view distance slider.
+    {
+        new_view_distance : f32 = options_menu_state.draw_distance
+        min_view_distance : f32 = 100.0
+        max_view_distance : f32 = 1_000.0
+        left_slider_text := rl.TextFormat("%.0f (%.0f)", min_view_distance, new_view_distance)
+        right_slider_text := rl.TextFormat("%.0f", max_view_distance)
+        selected_values := rl.GuiSlider(rl.Rectangle{f32(screen_width)/2, f32(screen_height)/2, 300, 50},
+            left_slider_text, right_slider_text,
+            &new_view_distance, min_view_distance, max_view_distance)
+        options_menu_state.draw_distance = new_view_distance
+    }
+
+    // Draw mouse speed slider.
+    {
+        new_mouse_speed : f32 = options_menu_state.mouse_speed
+        min_mouse_speed : f32 = 0.01
+        max_mouse_speed : f32 = 1.0
+        left_slider_text := rl.TextFormat("%.2f (%.2f)", min_mouse_speed, new_mouse_speed)
+        right_slider_text := rl.TextFormat("%.2f", max_mouse_speed)
+        selected_values := rl.GuiSlider(rl.Rectangle{f32(screen_width)/2, f32(screen_height)/2+50, 300, 50},
+            left_slider_text, right_slider_text,
+            &new_mouse_speed, min_mouse_speed, max_mouse_speed)
+        options_menu_state.mouse_speed = new_mouse_speed
+    }
 
     // Button activation.
     button_pressed := rl.IsKeyPressed(.ENTER) || rl.IsMouseButtonPressed(.LEFT)

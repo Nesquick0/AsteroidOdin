@@ -13,8 +13,3 @@ MainMenuState :: struct {
     using base_menu: BaseMenu,
     selected_button: MenuButton,
 }
-
-MenuButtonWithText :: struct {
-    text: cstring,
-    rect: rl.Rectangle,
-}

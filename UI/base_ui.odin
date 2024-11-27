@@ -1,5 +1,7 @@
 package UI
 
+import rl "vendor:raylib"
+
 MenuTag :: enum {
     MainMenu,
     OptionsMenu,
@@ -16,4 +18,9 @@ new_menu :: proc($T: typeid) -> BaseMenu {
     t := new(T)
     t.derived = t^
     return t
+}
+
+MenuButtonWithText :: struct {
+    text: cstring,
+    rect: rl.Rectangle,
 }
