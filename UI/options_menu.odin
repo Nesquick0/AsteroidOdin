@@ -1,0 +1,76 @@
+﻿package UI
+
+import rl "vendor:raylib"
+import "core:fmt"
+import "core:strings"
+
+draw_options_menu :: proc(options_menu_state: ^OptionsMenuState, screen_width: i32, screen_height: i32) -> MenuTag {
+    // Clear background
+    rl.ClearBackground(rl.BLACK)
+
+    // Get mouse position
+    mouse_position := rl.GetMousePosition()
+
+    // Draw title.
+    title_str : cstring = "OPTIONS"
+    title_size := rl.MeasureText(title_str, 50)
+    rl.DrawText(title_str, screen_width/2 - title_size, screen_height/2-200, 100, rl.WHITE)
+
+    // Define buttons positions.
+    buttons_positions := [i32(OptionsMenuButton.Count)]MenuButtonWithText{
+        {"Draw distance", rl.Rectangle{f32(screen_width)/2-250, f32(screen_height)/2, 0, 0}},
+        {"Back", rl.Rectangle{f32(screen_width)/2-50, f32(screen_height)-100, 0, 0}},
+    }
+    // Update buttons size.
+    for i in 0..<i32(OptionsMenuButton.Count) {
+        buttons_positions[i].rect.width = f32(rl.MeasureText(buttons_positions[i].text, 50))
+        buttons_positions[i].rect.x = f32(buttons_positions[i].rect.x) - buttons_positions[i].rect.width/2
+        buttons_positions[i].rect.height = 50
+    }
+
+    // Check keyboard input
+    if rl.IsKeyPressed(.UP) {
+        options_menu_state.selected_button = OptionsMenuButton((i32(options_menu_state.selected_button) - 1) % i32(OptionsMenuButton.Count))
+    }
+    if rl.IsKeyPressed(.DOWN) {
+        options_menu_state.selected_button = OptionsMenuButton((i32(options_menu_state.selected_button) + 1) % i32(OptionsMenuButton.Count))
+    }
+
+    for i in 0..<i32(OptionsMenuButton.Count) {
+        if rl.CheckCollisionPointRec(mouse_position, buttons_positions[i].rect) {
+            options_menu_state.selected_button = OptionsMenuButton(i)
+        }
+    }
+
+    // Draw buttons.
+    for i in 0..<i32(OptionsMenuButton.Count) {
+        button_color := rl.WHITE
+        if options_menu_state.selected_button == OptionsMenuButton(i) {
+            button_color = rl.RED
+            rl.DrawRectangleRec(buttons_positions[i].rect, button_color)
+        }
+        rl.DrawText(buttons_positions[i].text, i32(buttons_positions[i].rect.x), i32(buttons_positions[i].rect.y), 50, rl.WHITE)
+    }
+
+    // Draw slider.
+    new_view_distance : f32 = options_menu_state.draw_distance
+    min_view_distance : f32 = 1_000.0
+    max_view_distance : f32 = 10_000.0
+    left_slider_text := fmt.aprint(min_view_distance)
+    right_slider_text := fmt.aprint(max_view_distance)
+    selected_values := rl.GuiSlider(rl.Rectangle{f32(screen_width)/2, f32(screen_height)/2, 300, 50},
+        strings.clone_to_cstring(left_slider_text, context.temp_allocator), strings.clone_to_cstring(right_slider_text, context.temp_allocator),
+        &new_view_distance, 1_000.0, 10_000.0)
+    options_menu_state.draw_distance = new_view_distance
+
+    // Button activation.
+    button_pressed := rl.IsKeyPressed(.ENTER) || rl.IsMouseButtonPressed(.LEFT)
+    if button_pressed {
+        #partial switch options_menu_state.selected_button {
+        case OptionsMenuButton.Back:
+            return MenuTag.MainMenu
+        }
+    }
+
+    return MenuTag.OptionsMenu
+}
