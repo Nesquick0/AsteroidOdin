@@ -52,8 +52,15 @@ system_player_movement :: proc(game_state: ^Entities.GameState, delta_time: f32)
     // Loop player position in world bounds.
     player_entity.transform.translation = Constants.loop_position(player_entity.transform.translation)
 
-    rl.DrawText(vec3_to_string("Pos ", player_entity.transform.translation), 10, 40, 10, rl.WHITE)
-    rl.DrawText(vec3_to_string("Vel ", player_entity.velocity), 10, 30, 10, rl.WHITE)
+    // Update player rotation.
+    skip_rotation := rl.IsKeyDown(.LEFT_ALT)
+    if (!skip_rotation)
+    {
+        player_entity.transform.rotation = rl.QuaternionFromEuler(0.0, -game_state.camera_angle.y, -game_state.camera_angle.x)
+    }
+
+    //rl.DrawText(vec3_to_string("Pos ", player_entity.transform.translation), 10, 40, 10, rl.WHITE)
+    //rl.DrawText(vec3_to_string("Vel ", player_entity.velocity), 10, 50, 10, rl.WHITE)
 }
 
 get_player_entity :: proc(game_state: ^Entities.GameState) -> ^Entities.Player {
