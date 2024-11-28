@@ -36,6 +36,8 @@ Run :: proc() {
     rl.InitWindow(game_state.screen_width, game_state.screen_height, "Odin Asteroid")
     defer rl.CloseWindow()
 
+    rl.SetTargetFPS(60)
+
     for !rl.WindowShouldClose() {
         rl.BeginDrawing()
         defer rl.EndDrawing()
@@ -66,7 +68,7 @@ Run :: proc() {
                 game_state.menu_state = UI.new_menu(UI.MainMenuState)
             }
         case UI.GameHudState:
-            result := Systems.run(&game_state)
+            result := Systems.run_game(&game_state)
             new_menu_Tag : UI.MenuTag = UI.draw_game_hud(&e, game_state.screen_width, game_state.screen_height)
             #partial switch new_menu_Tag {
             case UI.MenuTag.MainMenu:
@@ -74,6 +76,7 @@ Run :: proc() {
             }
             // Return to main menu if game is over.
             if !result {
+                Systems.close_game(&game_state)
                 game_state.menu_state = UI.new_menu(UI.MainMenuState)
                 game_state.level_tag = Entities.LevelTag.MainMenu
             }

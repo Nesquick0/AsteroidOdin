@@ -20,4 +20,7 @@ GameState :: struct {
     mouse_speed: f32,
 
     camera: rl.Camera,
+    camera_angle: rl.Vector2,
+
+    entities: [dynamic]Entity,
 }

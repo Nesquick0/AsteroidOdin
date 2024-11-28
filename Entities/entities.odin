@@ -8,7 +8,7 @@ Entity :: struct {
     derived: any,
 }
 
-new_menu :: proc($T: typeid) -> Entity {
+new_entity :: proc($T: typeid) -> Entity {
     t := new(T)
     t.derived = t^
     return t
