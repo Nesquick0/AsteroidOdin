@@ -95,7 +95,20 @@ draw_player :: proc(game_state: ^Entities.GameState) {
     player_entity.model.transform = rotation_matrix * local_translation
 
     // Draw player model.
-    rl.DrawModel(player_entity.model, player_entity.transform.translation, player_entity.transform.scale.x, rl.WHITE)
+    //rl.DrawModel(player_entity.model, player_entity.transform.translation, player_entity.transform.scale.x, rl.WHITE)
+
+    // TODO: Optimize to only draw objects in view frustum.
+    // Draw repetition of actual world.
+    num_iterations :: 2
+    for x in -num_iterations..=num_iterations {
+        for y in -num_iterations..=num_iterations {
+            for z in -num_iterations..=num_iterations {
+                rl.DrawModel(player_entity.model,
+                player_entity.transform.translation + rl.Vector3{f32(x)*Constants.WORLD_SIZE, f32(y)*Constants.WORLD_SIZE, f32(z)*Constants.WORLD_SIZE},
+                player_entity.transform.scale.x, rl.WHITE)
+            }
+        }
+    }
 
     // Draw debug sphere around player position.
     when (false) {
