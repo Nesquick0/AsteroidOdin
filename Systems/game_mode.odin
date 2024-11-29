@@ -8,7 +8,9 @@ import "../UI"
 
 start_game :: proc(game_state: ^Entities.GameState) {
     rl.DisableCursor()
+    rl.SetRandomSeed(u32(rl.GetTime()))
 
+    game_state.start_time = rl.GetTime()
     game_state.level_tag = Entities.LevelTag.GameLevel
     game_state.score = 0
     game_state.camera = rl.Camera{
@@ -18,6 +20,7 @@ start_game :: proc(game_state: ^Entities.GameState) {
         fovy = 60.0,
         projection = rl.CameraProjection.PERSPECTIVE,
     }
+    game_state.max_asteroids = 10
 
     // Spawn player entity.
     new_entity := Entities.new_entity(Entities.Player)
@@ -40,7 +43,15 @@ run_game :: proc(game_state: ^Entities.GameState) -> bool {
         // Update score.
         game_hud_state := &e.derived.(UI.GameHudState)
         game_hud_state.score = game_state.score
+        game_hud_state.asteroids = get_num_asteroids(game_state)
     }
+
+    // Run all game systems.
+    system_player_movement(game_state, delta_time)
+    system_asteroid_spawn(game_state, delta_time)
+    system_asteroid_movement(game_state, delta_time)
+    system_player_fire_laser(game_state, delta_time)
+    system_laser_shot_movement(game_state, delta_time)
 
     // Update camera.
     update_camera(game_state, delta_time)
@@ -52,12 +63,9 @@ run_game :: proc(game_state: ^Entities.GameState) -> bool {
 
         draw_world_bounds(game_state)
         draw_player(game_state)
+        draw_asteroids(game_state)
+        draw_laser_shots(game_state)
     }
-
-    // Run all game systems.
-    system_player_movement(game_state, delta_time)
-    system_asteroid_movement(game_state, delta_time)
-    system_asteroid_spawn(game_state, delta_time)
 
     return true
 }
@@ -70,8 +78,8 @@ close_game :: proc(game_state: ^Entities.GameState) {
 update_camera :: proc(game_state: ^Entities.GameState, delta_time: f32) {
     // Update camera rotation directly from mouse input.
     camera_rotation := rl.Vector3{0.0, 0.0, 0.0}
-    camera_rotation.x = rl.GetMouseDelta().x * game_state.mouse_speed * delta_time
-    camera_rotation.y = rl.GetMouseDelta().y * game_state.mouse_speed * delta_time
+    camera_rotation.x = rl.GetMouseDelta().x * game_state.mouse_speed * 0.01
+    camera_rotation.y = rl.GetMouseDelta().y * game_state.mouse_speed * 0.01
     // Calculate change of camera position from camera position and new player position.
     player_entity := get_player_entity(game_state)
 
@@ -100,46 +108,22 @@ draw_world_bounds :: proc(game_state: ^Entities.GameState) {
     max_world_pos := rl.Vector3{Constants.WORLD_SIZE, Constants.WORLD_SIZE, Constants.WORLD_SIZE}
     world_center := (max_world_pos - min_world_pos)/2
 
-    num_iterations :: 3
-
     // Draw 3x larger world bounds
-    for x in -num_iterations..=num_iterations {
-        for y in -num_iterations..=num_iterations {
-            for z in -num_iterations..=num_iterations {
-                rl.DrawCubeWires(world_center + rl.Vector3{f32(x)*max_world_pos.x, f32(y)*max_world_pos.y, f32(z)*max_world_pos.z},
-                Constants.WORLD_SIZE, Constants.WORLD_SIZE, Constants.WORLD_SIZE, rl.BLUE)
+    when (false)
+    {
+        num_iterations :: 3
+        for x in -num_iterations..=num_iterations {
+            for y in -num_iterations..=num_iterations {
+                for z in -num_iterations..=num_iterations {
+                    rl.DrawCubeWires(world_center + rl.Vector3{f32(x)*max_world_pos.x, f32(y)*max_world_pos.y, f32(z)*max_world_pos.z},
+                    Constants.WORLD_SIZE, Constants.WORLD_SIZE, Constants.WORLD_SIZE, rl.BLUE)
+                }
             }
         }
     }
 
     // Draw world bounds.
     rl.DrawCubeWires(world_center, max_world_pos.x, max_world_pos.y, max_world_pos.z, rl.RED)
-}
-
-draw_player :: proc(game_state: ^Entities.GameState) {
-    player_entity := get_player_entity(game_state)
-    // Custom model transform.
-    local_position_offset := rl.Vector3{-12.0, -3.0, -2.0}
-    local_translation := rl.MatrixTranslate(local_position_offset.x, local_position_offset.y, local_position_offset.z)
-
-    rotation_matrix := rl.QuaternionToMatrix(player_entity.transform.rotation)
-    rotation_matrix = rl.MatrixLookAt(
-        rl.Vector3{0.0, 0.0, 0.0},
-        rl.Vector3{0.0, 1.0, 0.0},
-        rl.Vector3{0.0, 0.0, 1.0}) * rotation_matrix
-
-    // Rotate model.
-    player_entity.model.transform = rotation_matrix * local_translation
-
-    // Draw player model.
-    rl.DrawModel(player_entity.model, player_entity.transform.translation, player_entity.transform.scale.x, rl.WHITE)
-
-    // Draw debug sphere around player position.
-    when (false) {
-        model_bounds := rl.GetModelBoundingBox(player_entity.model)
-        model_size := rl.Vector3Distance(model_bounds.min, model_bounds.max) * player_entity.transform.scale.x
-        rl.DrawSphereWires(player_entity.transform.translation, model_size/2, 8, 8, rl.GREEN)
-    }
 }
 
 vec2_to_string :: proc(text: cstring, v: rl.Vector2) -> cstring {

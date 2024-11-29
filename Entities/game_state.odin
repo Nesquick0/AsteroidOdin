@@ -11,6 +11,7 @@ LevelTag :: enum {
 GameState :: struct {
     screen_width: i32,
     screen_height: i32,
+    start_time: f64,
 
     level_tag: LevelTag,
     score: i32,
@@ -21,6 +22,8 @@ GameState :: struct {
 
     camera: rl.Camera,
     camera_angle: rl.Vector2,
+
+    max_asteroids: i32,
 
     entities: [dynamic]Entity,
 }

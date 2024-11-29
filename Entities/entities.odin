@@ -5,6 +5,7 @@ import rl "vendor:raylib"
 Entity :: struct {
     transform: rl.Transform,
     velocity: rl.Vector3,
+    ang_velocity: rl.Vector3,
     derived: any,
 }
 
