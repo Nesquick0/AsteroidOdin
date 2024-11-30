@@ -34,6 +34,7 @@ Player :: struct {
 
 LaserShot :: struct {
     using entity: Entity,
+    time_to_live: f32,
     model: rl.Model,
 }
 

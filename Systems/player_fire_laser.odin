@@ -26,8 +26,11 @@ system_player_fire_laser :: proc(game_state: ^Entities.GameState, delta_time: f3
             player_entity.weapon_id = Entities.WeaponId.Left
         }
 
-        // Get player position.
-        player_position := player_entity.transform.translation
+        // Get laster start position.
+        laser_start_pos, laser_start_dir := get_laser_position(player_entity, player_entity.weapon_id)
+        new_laser := spawn_laser(game_state, laser_start_pos, laser_start_dir)
+        new_laser.time_to_live = Constants.LASER_SHOT_TTL
+        new_laser.velocity = (laser_start_dir * Constants.LASER_SHOT_VELOCITY) + player_entity.velocity
     }
 }
 
@@ -54,4 +57,15 @@ get_laser_position :: proc(player_entity: ^Entities.Player, weapon_id: Entities.
     world_position := rl.Vector3Transform(local_position_offset, rl.MatrixInvert(player_matrix))
 
     return world_position, player_direction
+}
+
+spawn_laser :: proc(game_state: ^Entities.GameState, start_pos: rl.Vector3, start_dir: rl.Vector3) -> ^Entities.LaserShot {
+    new_entity := Entities.new_entity(Entities.LaserShot)
+    laser_entity := &new_entity.derived.(Entities.LaserShot)
+    laser_entity.transform.translation = start_pos
+    laser_entity.transform.rotation = rl.QuaternionFromEuler(0.0, 0.0, 0.0)
+    laser_entity.transform.scale = rl.Vector3{1.0, 0.0, 0.0}
+    //laser_entity.model = rl.LoadModel("Data/laser_gltf/scene.gltf")
+    append(&game_state.entities, laser_entity)
+    return laser_entity
 }
