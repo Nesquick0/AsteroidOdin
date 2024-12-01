@@ -2,6 +2,8 @@
 
 import rl "vendor:raylib"
 
+import "../Components"
+
 Entity :: struct {
     transform: rl.Transform,
     velocity: rl.Vector3,
@@ -15,19 +17,11 @@ new_entity :: proc($T: typeid) -> Entity {
     return t
 }
 
-PlayerType :: struct { }
-
-WeaponId :: enum i32 {
-    Left,
-    Right,
-    Count,
-}
-
 Player :: struct {
     using entity: Entity,
-    player_type: PlayerType,
+    player_type: Components.PlayerType,
     reload_countdown: f32,
-    weapon_id: WeaponId,
+    weapon_id: Components.WeaponId,
     model: rl.Model,
     camera_pos: rl.Matrix,
 }
@@ -38,14 +32,8 @@ LaserShot :: struct {
     model: rl.Model,
 }
 
-AsteroidType :: enum i32 {
-    Small,
-    Medium,
-    Large,
-}
-
 Asteroid :: struct {
     using entity: Entity,
     model: rl.Model,
-    asteroid_type: AsteroidType,
+    asteroid_type: Components.AsteroidType,
 }

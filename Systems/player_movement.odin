@@ -24,18 +24,12 @@ system_player_movement :: proc(game_state: ^Entities.GameState, delta_time: f32)
         player_input.x += 1.0
     }
 
-    // Calculate player movement vector.
-    player_movement := player_input * Constants.PLAYER_MAX_SPEED * delta_time
-
     // Update player rotation based on camera angle.
     player_direction := rl.Vector3Normalize(game_state.camera.target - game_state.camera.position)
     player_right_dir := rl.Vector3CrossProduct(player_direction, rl.Vector3{0.0, 1.0, 0.0})
 
-    player_direction *= player_movement.z
-    player_right_dir *= player_movement.x
-
-    // Update player entity.
-    //player_entity.transform.translation += player_direction + player_right_dir
+    player_direction *= player_input.z
+    player_right_dir *= player_input.x
 
     // Update player velocity
     change_velocity := (player_direction + player_right_dir) * Constants.PLAYER_ACCELERATION * delta_time

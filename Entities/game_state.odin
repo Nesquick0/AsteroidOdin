@@ -2,6 +2,7 @@ package Entities
 
 import rl "vendor:raylib"
 import "../UI"
+import "../Components"
 
 LevelTag :: enum {
     MainMenu,
@@ -22,6 +23,8 @@ GameState :: struct {
 
     camera: rl.Camera,
     camera_angle: rl.Vector2,
+    frustum: Components.Frustum,
+    update_frustum: bool,
 
     max_asteroids: i32,
 

@@ -3,6 +3,7 @@ package Systems
 import rl "vendor:raylib"
 import "../Entities"
 import "../Constants"
+import "../Components"
 
 system_asteroid_spawn :: proc(game_state: ^Entities.GameState, delta_time: f32) {
     // Count asteriods. Spawn new if necessary.
@@ -29,7 +30,7 @@ system_asteroid_spawn :: proc(game_state: ^Entities.GameState, delta_time: f32) 
 
         // Spawn asteroid.
         asteroid_entity := spawn_asteroid_at_location(game_state, random_position)
-        asteroid_entity.asteroid_type = Entities.AsteroidType.Large
+        asteroid_entity.asteroid_type = Components.AsteroidType.Large
         asteroid_entity.transform.scale = rl.Vector3{2.0, 0.0, 0.0}
         asteroid_entity.velocity = random_velocity
     }

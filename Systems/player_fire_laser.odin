@@ -3,6 +3,7 @@
 import rl "vendor:raylib"
 import "../Entities"
 import "../Constants"
+import "../Components"
 
 system_player_fire_laser :: proc(game_state: ^Entities.GameState, delta_time: f32) {
     // Get player entity.
@@ -20,10 +21,10 @@ system_player_fire_laser :: proc(game_state: ^Entities.GameState, delta_time: f3
         player_entity.reload_countdown = Constants.PLAYER_LASER_RELOAD_TIME
         // Swap weapon id.
         #partial switch player_entity.weapon_id {
-        case Entities.WeaponId.Left:
-            player_entity.weapon_id = Entities.WeaponId.Right
-        case Entities.WeaponId.Right:
-            player_entity.weapon_id = Entities.WeaponId.Left
+        case Components.WeaponId.Left:
+            player_entity.weapon_id = Components.WeaponId.Right
+        case Components.WeaponId.Right:
+            player_entity.weapon_id = Components.WeaponId.Left
         }
 
         // Get laster start position.
@@ -34,7 +35,7 @@ system_player_fire_laser :: proc(game_state: ^Entities.GameState, delta_time: f3
     }
 }
 
-get_laser_position :: proc(player_entity: ^Entities.Player, weapon_id: Entities.WeaponId) -> (rl.Vector3, rl.Vector3) {
+get_laser_position :: proc(player_entity: ^Entities.Player, weapon_id: Components.WeaponId) -> (rl.Vector3, rl.Vector3) {
     // Get player position.
     player_position := player_entity.transform.translation
 
@@ -48,9 +49,9 @@ get_laser_position :: proc(player_entity: ^Entities.Player, weapon_id: Entities.
     // Get laser position.
     local_position_offset := rl.Vector3{0.0, 0.0, 0.0}
     #partial switch weapon_id {
-    case Entities.WeaponId.Left:
+    case Components.WeaponId.Left:
         local_position_offset = rl.Vector3{-4.0, 0.0, -8.0} * player_entity.transform.scale.x
-    case Entities.WeaponId.Right:
+    case Components.WeaponId.Right:
         local_position_offset = rl.Vector3{4.0, 0.0, -8.0} * player_entity.transform.scale.x
     }
 

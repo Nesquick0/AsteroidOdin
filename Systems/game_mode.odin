@@ -61,6 +61,8 @@ run_game :: proc(game_state: ^Entities.GameState) -> bool {
         rl.BeginMode3D(game_state.camera)
         defer rl.EndMode3D()
 
+        update_frustum_from_camera(&game_state.camera, f32(game_state.screen_width)/f32(game_state.screen_height),
+            &game_state.frustum, game_state)
         draw_world_bounds(game_state)
         draw_player(game_state)
         draw_asteroids(game_state)
