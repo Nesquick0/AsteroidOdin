@@ -44,6 +44,7 @@ init :: proc() {
 }
 
 run :: proc() {
+    rl.SetConfigFlags({ rl.ConfigFlag.WINDOW_RESIZABLE })
     rl.InitWindow(game_state.screen_width, game_state.screen_height, "Odin Asteroid")
     defer rl.CloseWindow()
 
@@ -53,6 +54,7 @@ run :: proc() {
         rl.BeginDrawing()
         defer rl.EndDrawing()
 
+        check_fullscreen(&game_state)
         rl.DrawFPS(5, 5)
 
         switch &e in game_state.menu_state.derived {
@@ -129,4 +131,35 @@ tracking_allocator :: proc(track: ^mem.Tracking_Allocator) {
         }
     }
     mem.tracking_allocator_destroy(track)
+}
+
+check_fullscreen :: proc(game_state: ^Entities.GameState) {
+    // Check if window is resized.
+    if rl.IsWindowResized() && !rl.IsWindowFullscreen() {
+        // Update game state.
+        game_state.screen_width = rl.GetScreenWidth()
+        game_state.screen_height = rl.GetScreenHeight()
+    }
+
+    // Check for alt + enter to toggle fullscreen.
+    if (rl.IsKeyPressed(.ENTER) && (rl.IsKeyDown(.LEFT_ALT) || rl.IsKeyDown(.RIGHT_ALT))) || rl.IsKeyPressed(.F11) {
+        display := rl.GetCurrentMonitor()
+        display_size: [2]i32 = {rl.GetMonitorWidth(display), rl.GetMonitorHeight(display)}
+        is_borderless := game_state.screen_width == display_size.x && game_state.screen_height == display_size.y
+
+        if (is_borderless) {
+            rl.ToggleBorderlessWindowed()
+            // If we are full screen, then go back to the windowed size.
+            rl.SetWindowSize(DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT)
+        }
+        else {
+            rl.ToggleBorderlessWindowed()
+            // If we are not full screen, set the window size to match the monitor we are on.
+            rl.SetWindowSize(display_size.x, display_size.y)
+        }
+
+        // Update game state.
+        game_state.screen_width = rl.GetScreenWidth()
+        game_state.screen_height = rl.GetScreenHeight()
+    }
 }
