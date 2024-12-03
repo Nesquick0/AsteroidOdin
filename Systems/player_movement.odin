@@ -98,8 +98,8 @@ draw_player :: proc(game_state: ^Entities.GameState) {
         for y in -num_iterations..=num_iterations {
             for z in -num_iterations..=num_iterations {
                 rl.DrawModel(player_entity.model,
-                player_entity.transform.translation + rl.Vector3{f32(x)*Constants.WORLD_SIZE, f32(y)*Constants.WORLD_SIZE, f32(z)*Constants.WORLD_SIZE},
-                player_entity.transform.scale.x, rl.WHITE)
+                    player_entity.transform.translation + rl.Vector3{f32(x)*Constants.WORLD_SIZE, f32(y)*Constants.WORLD_SIZE, f32(z)*Constants.WORLD_SIZE},
+                    player_entity.transform.scale.x, rl.WHITE)
             }
         }
     }

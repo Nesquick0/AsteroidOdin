@@ -43,12 +43,26 @@ init :: proc() {
     }
 }
 
+load_shader :: proc(game_state: ^Entities.GameState) {
+    game_state.shader_lighting = rl.LoadShader(
+        "Data/shaders/lighting.vs",
+        "Data/shaders/lighting.fs")
+    ambient_loc := rl.GetShaderLocation(game_state.shader_lighting, "ambient")
+    ambient_color := rl.Vector4{0.1, 0.1, 0.1, 1.0}
+    rl.SetShaderValue(game_state.shader_lighting, ambient_loc, &ambient_color, rl.ShaderUniformDataType.VEC4)
+    shine_coef_loc := rl.GetShaderLocation(game_state.shader_lighting, "shineCoef")
+    shine_coef : f32 = 0.5
+    rl.SetShaderValue(game_state.shader_lighting, shine_coef_loc, &shine_coef, rl.ShaderUniformDataType.FLOAT)
+}
+
 run :: proc() {
     rl.SetConfigFlags({ rl.ConfigFlag.WINDOW_RESIZABLE })
     rl.InitWindow(game_state.screen_width, game_state.screen_height, "Odin Asteroid")
     defer rl.CloseWindow()
 
     //rl.SetTargetFPS(60)
+
+    load_shader(&game_state)
 
     for !rl.WindowShouldClose() {
         rl.BeginDrawing()
@@ -115,6 +129,7 @@ delete_old_menu :: proc(game_state: ^Entities.GameState) {
 
 cleanup :: proc() {
     delete_old_menu(&game_state)
+    rl.UnloadShader(game_state.shader_lighting)
 }
 
 tracking_allocator :: proc(track: ^mem.Tracking_Allocator) {

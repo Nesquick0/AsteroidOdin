@@ -26,6 +26,9 @@ GameState :: struct {
     frustum: Components.Frustum,
     update_frustum: bool,
 
+    shader_lighting: rl.Shader,
+    sun_light: Light,
+
     max_asteroids: i32,
 
     entities: [dynamic]Entity,

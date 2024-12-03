@@ -55,6 +55,9 @@ spawn_asteroid_at_location :: proc(game_state: ^Entities.GameState, location: rl
     asteroid_entity.transform.rotation = rl.QuaternionFromEuler(0.0, 0.0, 0.0)
     asteroid_entity.transform.scale = rl.Vector3{1.0, 0.0, 0.0}
     asteroid_entity.model = rl.LoadModel("Data/ps1_style_low_poly_asteroids_gltf/asteroid.glb")
+    for i in 0..<asteroid_entity.model.materialCount {
+        asteroid_entity.model.materials[i].shader = game_state.shader_lighting
+    }
     append(&game_state.entities, asteroid_entity)
     return asteroid_entity
 }

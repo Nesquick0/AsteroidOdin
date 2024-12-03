@@ -29,7 +29,12 @@ start_game :: proc(game_state: ^Entities.GameState) {
     player_entity.transform.rotation = rl.QuaternionFromEuler(0.0, 0.0, 0.0)
     player_entity.transform.scale = rl.Vector3{0.1, 0.0, 0.0}
     player_entity.model = rl.LoadModel("Data/space_ranger_sr1_gltf/scene.gltf")
+    for i in 0..<player_entity.model.materialCount {
+        player_entity.model.materials[i].shader = game_state.shader_lighting
+    }
     append(&game_state.entities, player_entity)
+
+    create_light(Entities.LightType.Directional, {0.0, 0.0, 0.0}, rl.Vector3Normalize({0.1, -1.0, 0.1}), rl.Color{255,255,255,255}, game_state.shader_lighting)
 }
 
 run_game :: proc(game_state: ^Entities.GameState) -> bool {
@@ -61,8 +66,13 @@ run_game :: proc(game_state: ^Entities.GameState) -> bool {
         rl.BeginMode3D(game_state.camera)
         defer rl.EndMode3D()
 
-        update_frustum_from_camera(&game_state.camera, f32(game_state.screen_width)/f32(game_state.screen_height),
-            &game_state.frustum, game_state)
+        update_light_values(game_state.shader_lighting, game_state.sun_light)
+
+        //rl.BeginShaderMode(game_state.shader_lighting)
+        //defer rl.EndShaderMode()
+
+        //update_frustum_from_camera(&game_state.camera, f32(game_state.screen_width)/f32(game_state.screen_height),
+        //    &game_state.frustum, game_state)
         draw_world_bounds(game_state)
         draw_player(game_state)
         draw_asteroids(game_state)
