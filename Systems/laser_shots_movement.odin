@@ -4,6 +4,8 @@ import rl "vendor:raylib"
 import "../Entities"
 import "../Constants"
 
+import "../tracy"
+
 system_laser_shot_movement :: proc(game_state: ^Entities.GameState, delta_time: f32) {
     // Update laser shot positions based on velocity.
     for &e, i in game_state.entities {
@@ -26,6 +28,9 @@ system_laser_shot_movement :: proc(game_state: ^Entities.GameState, delta_time: 
 }
 
 draw_laser_shots :: proc(game_state: ^Entities.GameState) {
+    when TRACY_ENABLE{
+        tracy.Zone();
+    }
     // Draw laser shots.
     for &e in game_state.entities {
         switch &e_derived in e.derived {

@@ -5,6 +5,8 @@ import "core:math"
 import "../Entities"
 import "../Constants"
 
+import "../tracy"
+
 system_player_movement :: proc(game_state: ^Entities.GameState, delta_time: f32) {
     // Get player entity.
     player_entity := get_player_entity(game_state)
@@ -78,6 +80,9 @@ get_player_model_matrix :: proc(player_entity: ^Entities.Player) -> rl.Matrix {
 }
 
 draw_player :: proc(game_state: ^Entities.GameState) {
+    when TRACY_ENABLE{
+        tracy.Zone();
+    }
     player_entity := get_player_entity(game_state)
     // Custom model transform.
     local_position_offset := rl.Vector3{-12.0, -3.0, -2.0}

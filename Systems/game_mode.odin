@@ -6,6 +6,9 @@ import "../Constants"
 import "../Entities"
 import "../UI"
 
+import "../tracy"
+TRACY_ENABLE :: #config(TRACY_ENABLE, false)
+
 start_game :: proc(game_state: ^Entities.GameState) {
     rl.DisableCursor()
     rl.SetRandomSeed(u32(rl.GetTime()))
@@ -38,6 +41,9 @@ start_game :: proc(game_state: ^Entities.GameState) {
 }
 
 run_game :: proc(game_state: ^Entities.GameState) -> bool {
+    when TRACY_ENABLE{
+        tracy.Zone();
+    }
     // Clear background
     rl.ClearBackground(rl.BLACK)
     delta_time := rl.GetFrameTime()
@@ -52,17 +58,25 @@ run_game :: proc(game_state: ^Entities.GameState) -> bool {
     }
 
     // Run all game systems.
-    system_player_movement(game_state, delta_time)
-    system_asteroid_spawn(game_state, delta_time)
-    system_asteroid_movement(game_state, delta_time)
-    system_player_fire_laser(game_state, delta_time)
-    system_laser_shot_movement(game_state, delta_time)
+    {
+        when TRACY_ENABLE{
+            tracy.ZoneN("Game systems");
+        }
+        system_player_movement(game_state, delta_time)
+        system_asteroid_spawn(game_state, delta_time)
+        system_asteroid_movement(game_state, delta_time)
+        system_player_fire_laser(game_state, delta_time)
+        system_laser_shot_movement(game_state, delta_time)
+    }
 
     // Update camera.
     update_camera(game_state, delta_time)
 
     // Draw world.
     {
+        when TRACY_ENABLE{
+            tracy.ZoneN("Draw world");
+        }
         rl.BeginMode3D(game_state.camera)
         defer rl.EndMode3D()
 
@@ -115,6 +129,9 @@ update_camera :: proc(game_state: ^Entities.GameState, delta_time: f32) {
 }
 
 draw_world_bounds :: proc(game_state: ^Entities.GameState) {
+    when TRACY_ENABLE{
+        tracy.Zone();
+    }
     // Debug draw world bounds.
     min_world_pos := rl.Vector3{0.0, 0.0, 0.0}
     max_world_pos := rl.Vector3{Constants.WORLD_SIZE, Constants.WORLD_SIZE, Constants.WORLD_SIZE}

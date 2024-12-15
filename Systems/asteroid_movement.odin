@@ -4,6 +4,8 @@ import rl "vendor:raylib"
 import "../Entities"
 import "../Constants"
 
+import "../tracy"
+
 system_asteroid_movement :: proc(game_state: ^Entities.GameState, delta_time: f32) {
     // Update asteroid positions based on velocity.
     for &e in game_state.entities {
@@ -18,6 +20,9 @@ system_asteroid_movement :: proc(game_state: ^Entities.GameState, delta_time: f3
 }
 
 draw_asteroids :: proc(game_state: ^Entities.GameState) {
+    when TRACY_ENABLE{
+        tracy.Zone();
+    }
     // Draw asteroids.
     for &e in game_state.entities {
         switch &e_derived in e.derived {
