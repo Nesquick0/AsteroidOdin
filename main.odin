@@ -117,7 +117,6 @@ run :: proc() {
             }
             // Return to main menu if game is over.
             if !result {
-                Systems.close_game(&game_state)
                 delete_old_menu(&game_state)
                 game_state.menu_state = UI.new_menu(UI.MainMenuState)
                 game_state.level_tag = Entities.LevelTag.MainMenu
@@ -134,6 +133,7 @@ delete_old_menu :: proc(game_state: ^Entities.GameState) {
     case UI.OptionsMenuState:
         free(&e)
     case UI.GameHudState:
+        Systems.close_game(game_state)
         free(&e)
     }
 }

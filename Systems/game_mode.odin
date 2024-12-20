@@ -98,6 +98,16 @@ run_game :: proc(game_state: ^Entities.GameState) -> bool {
 
 close_game :: proc(game_state: ^Entities.GameState) {
     // Delete all entities.
+    for &e in game_state.entities {
+        switch &e_derived in e.derived {
+        case Entities.Player:
+            free(&e_derived)
+        case Entities.LaserShot:
+            free(&e_derived)
+        case Entities.Asteroid:
+            free(&e_derived)
+        }
+    }
     delete(game_state.entities)
 }
 
