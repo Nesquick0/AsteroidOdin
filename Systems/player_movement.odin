@@ -62,9 +62,9 @@ system_player_movement :: proc(game_state: ^Entities.GameState, delta_time: f32)
 get_player_entity :: proc(game_state: ^Entities.GameState) -> ^Entities.Player {
     // Iterate all entities until correct one found.
     for &e in game_state.entities {
-        switch &e_derived in e.derived {
-            case Entities.Player:
-                return &e.derived.(Entities.Player)
+        player_entity, e_ok := &e.derived.(Entities.Player)
+        if e_ok {
+            return player_entity
         }
     }
     return nil

@@ -49,11 +49,11 @@ run_game :: proc(game_state: ^Entities.GameState) -> bool {
     delta_time := rl.GetFrameTime()
 
     // Update UI data.
-    switch &e in game_state.menu_state.derived {
-    case UI.GameHudState:
+    game_hud_state, e_ok := &game_state.menu_state.derived.(UI.GameHudState)
+    if e_ok {
         // Update score.
-        game_hud_state := &e.derived.(UI.GameHudState)
         game_hud_state.score = game_state.score
+        // Update asteroids.
         game_hud_state.asteroids = get_num_asteroids(game_state)
     }
 

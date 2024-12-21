@@ -40,8 +40,8 @@ get_num_asteroids :: proc(game_state: ^Entities.GameState) -> i32 {
     // Iterate all entities until correct one found.
     num_asteroids : i32 = 0
     for &e in game_state.entities {
-        switch &e_derived in e.derived {
-        case Entities.Asteroid:
+        asteroid_entity, e_ok := &e.derived.(Entities.Asteroid)
+        if e_ok {
             num_asteroids += 1
         }
     }

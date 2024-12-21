@@ -9,9 +9,8 @@ import "../tracy"
 system_asteroid_movement :: proc(game_state: ^Entities.GameState, delta_time: f32) {
     // Update asteroid positions based on velocity.
     for &e in game_state.entities {
-        switch &e_derived in e.derived {
-        case Entities.Asteroid:
-            asteroid_entity := &e.derived.(Entities.Asteroid)
+        asteroid_entity, e_ok := &e.derived.(Entities.Asteroid)
+        if e_ok {
             asteroid_entity.transform.translation += asteroid_entity.velocity * delta_time
             // Loop asteroid position in world bounds.
             asteroid_entity.transform.translation = Constants.loop_position(asteroid_entity.transform.translation)
@@ -25,9 +24,8 @@ draw_asteroids :: proc(game_state: ^Entities.GameState) {
     }
     // Draw asteroids.
     for &e in game_state.entities {
-        switch &e_derived in e.derived {
-        case Entities.Asteroid:
-            asteroid_entity := &e.derived.(Entities.Asteroid)
+        asteroid_entity, e_ok := &e.derived.(Entities.Asteroid)
+        if e_ok {
             // Custom model transform.
             local_position_offset := rl.Vector3{0.0, 0.0, 0.0}
             local_translation := rl.MatrixTranslate(local_position_offset.x, local_position_offset.y, local_position_offset.z)

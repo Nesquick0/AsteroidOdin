@@ -9,9 +9,8 @@ import "../tracy"
 system_laser_shot_movement :: proc(game_state: ^Entities.GameState, delta_time: f32) {
     // Update laser shot positions based on velocity.
     for &e, i in game_state.entities {
-        switch &e_derived in e.derived {
-        case Entities.LaserShot:
-            laser_shot_entity := &e.derived.(Entities.LaserShot)
+        laser_shot_entity, e_ok := &e.derived.(Entities.LaserShot)
+        if e_ok {
             laser_shot_entity.transform.translation += laser_shot_entity.velocity * delta_time
             // Loop laser shot position in world bounds.
             laser_shot_entity.transform.translation = Constants.loop_position(laser_shot_entity.transform.translation)
@@ -21,7 +20,7 @@ system_laser_shot_movement :: proc(game_state: ^Entities.GameState, delta_time: 
             if laser_shot_entity.time_to_live <= 0.0 {
                 // Delete laser shot.
                 unordered_remove(&game_state.entities, i)
-                free(&e_derived)
+                free(laser_shot_entity)
             }
         }
     }
@@ -33,10 +32,8 @@ draw_laser_shots :: proc(game_state: ^Entities.GameState) {
     }
     // Draw laser shots.
     for &e in game_state.entities {
-        switch &e_derived in e.derived {
-        case Entities.LaserShot:
-            laser_shot_entity := &e.derived.(Entities.LaserShot)
-
+        laser_shot_entity, e_ok := &e.derived.(Entities.LaserShot)
+        if e_ok {
             // Draw laser shot as line for now.
             //rl.DrawLine3D(laser_shot_entity.transform.translation, laser_shot_entity.transform.translation + laser_shot_entity.velocity, rl.GREEN)
 
