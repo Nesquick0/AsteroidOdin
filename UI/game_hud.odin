@@ -1,13 +1,25 @@
 ﻿package UI
 
 import rl "vendor:raylib"
-import "core:fmt"
 
 draw_game_hud :: proc(game_state: ^GameHudState, screen_width: i32, screen_height: i32) -> MenuTag {
-    // Draw score in top right corner.
     score_text := rl.TextFormat("Score: %d", game_state.score)
+    asteroids_text := rl.TextFormat("Asteroids: %d", game_state.asteroids)
+
+    // Draw score in top right corner.
     score_text_size := rl.MeasureText(score_text, 20)
     rl.DrawText(score_text, screen_width-10 - score_text_size, 10, 20, rl.WHITE)
+    // Draw asteroids in top right corner.
+    asteroids_text_size := rl.MeasureText(asteroids_text, 20)
+    rl.DrawText(asteroids_text, screen_width-10 - asteroids_text_size, 40, 20, rl.WHITE)
+
+    // Draw crosshairs in the center.
+    middle_space : i32 = 5
+    crosshair_size : i32 = 10
+    rl.DrawLine(screen_width/2 + middle_space, screen_height/2, screen_width/2 + middle_space + crosshair_size, screen_height/2, rl.GREEN)
+    rl.DrawLine(screen_width/2, screen_height/2 + middle_space, screen_width/2, screen_height/2 + middle_space + crosshair_size, rl.GREEN)
+    rl.DrawLine(screen_width/2 - middle_space, screen_height/2, screen_width/2 - middle_space - crosshair_size, screen_height/2, rl.GREEN)
+    rl.DrawLine(screen_width/2, screen_height/2 - middle_space, screen_width/2, screen_height/2 - middle_space - crosshair_size, rl.GREEN)
 
     return MenuTag.GameMenu
 }
