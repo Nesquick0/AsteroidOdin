@@ -21,7 +21,7 @@ system_laser_shot_movement :: proc(game_state: ^Entities.GameState, delta_time: 
             if laser_shot_entity.time_to_live <= 0.0 {
                 // Delete laser shot.
                 unordered_remove(&game_state.entities, i)
-                //delete(e)
+                free(&e_derived)
             }
         }
     }
