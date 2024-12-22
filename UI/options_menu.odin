@@ -1,8 +1,6 @@
 ﻿package UI
 
 import rl "vendor:raylib"
-import "core:fmt"
-import "core:strings"
 
 draw_options_menu :: proc(options_menu_state: ^OptionsMenuState, screen_width: i32, screen_height: i32) -> MenuTag {
     // Clear background
@@ -60,7 +58,7 @@ draw_options_menu :: proc(options_menu_state: ^OptionsMenuState, screen_width: i
         max_view_distance : f32 = 1_000.0
         left_slider_text := rl.TextFormat("%.0f (%.0f)", min_view_distance, new_view_distance)
         right_slider_text := rl.TextFormat("%.0f", max_view_distance)
-        selected_values := rl.GuiSlider(rl.Rectangle{f32(screen_width)/2, f32(screen_height)/2, 300, 50},
+        rl.GuiSlider(rl.Rectangle{f32(screen_width)/2, f32(screen_height)/2, 300, 50},
             left_slider_text, right_slider_text,
             &new_view_distance, min_view_distance, max_view_distance)
         options_menu_state.draw_distance = new_view_distance
@@ -73,7 +71,7 @@ draw_options_menu :: proc(options_menu_state: ^OptionsMenuState, screen_width: i
         max_mouse_speed : f32 = 1.0
         left_slider_text := rl.TextFormat("%.2f (%.2f)", min_mouse_speed, new_mouse_speed)
         right_slider_text := rl.TextFormat("%.2f", max_mouse_speed)
-        selected_values := rl.GuiSlider(rl.Rectangle{f32(screen_width)/2, f32(screen_height)/2+50, 300, 50},
+        rl.GuiSlider(rl.Rectangle{f32(screen_width)/2, f32(screen_height)/2+50, 300, 50},
             left_slider_text, right_slider_text,
             &new_mouse_speed, min_mouse_speed, max_mouse_speed)
         options_menu_state.mouse_speed = new_mouse_speed

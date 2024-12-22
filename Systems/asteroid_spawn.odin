@@ -31,8 +31,12 @@ system_asteroid_spawn :: proc(game_state: ^Entities.GameState, delta_time: f32) 
         // Spawn asteroid.
         asteroid_entity := spawn_asteroid_at_location(game_state, random_position)
         asteroid_entity.asteroid_type = Components.AsteroidType.Large
-        asteroid_entity.transform.scale = rl.Vector3{2.0, 0.0, 0.0}
+        asteroid_entity.transform.scale = rl.Vector3{Components.get_asteroid_size(asteroid_entity.asteroid_type), 0.0, 0.0}
         asteroid_entity.velocity = random_velocity
+
+        // Compute bounding box.
+        asteroid_entity.bounding_box = rl.GetModelBoundingBox(asteroid_entity.model)
+        asteroid_entity.size = rl.Vector3Distance(asteroid_entity.bounding_box.min, asteroid_entity.bounding_box.max) * asteroid_entity.transform.scale.x
     }
 }
 
@@ -40,7 +44,7 @@ get_num_asteroids :: proc(game_state: ^Entities.GameState) -> i32 {
     // Iterate all entities until correct one found.
     num_asteroids : i32 = 0
     for &e in game_state.entities {
-        asteroid_entity, e_ok := &e.derived.(Entities.Asteroid)
+        _, e_ok := &e.derived.(Entities.Asteroid)
         if e_ok {
             num_asteroids += 1
         }

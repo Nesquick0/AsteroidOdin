@@ -1,13 +1,15 @@
-﻿package Systems
+﻿#+vet !unused-imports
+package Systems
 
 import rl "vendor:raylib"
 import "core:math"
 import "../Constants"
 import "../Entities"
 import "../UI"
+import "core:fmt"
 
-import "../tracy"
 TRACY_ENABLE :: #config(TRACY_ENABLE, false)
+import "../tracy"
 
 start_game :: proc(game_state: ^Entities.GameState) {
     rl.DisableCursor()
@@ -171,4 +173,27 @@ vec2_to_string :: proc(text: cstring, v: rl.Vector2) -> cstring {
 
 vec3_to_string :: proc(text: cstring, v: rl.Vector3) -> cstring {
     return rl.TextFormat("%s(%.2f, %.2f, %.2f)", text, v.x, v.y, v.z)
+}
+
+remove_entity_from_game_state :: proc(game_state: ^Entities.GameState, entity: ^Entities.Entity) {
+    for &e, i in game_state.entities {
+        switch &e_derived in e.derived {
+        case Entities.Player:
+            if (&e_derived == entity) {
+                unordered_remove(&game_state.entities, i)
+                return
+            }
+        case Entities.LaserShot:
+            if (&e_derived == entity) {
+                unordered_remove(&game_state.entities, i)
+                return
+            }
+        case Entities.Asteroid:
+            if (&e_derived == entity) {
+                unordered_remove(&game_state.entities, i)
+                return
+            }
+        }
+    }
+    fmt.eprintfln("Entity not found in game state.")
 }

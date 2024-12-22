@@ -1,7 +1,5 @@
 ﻿package UI
 
-import rl "vendor:raylib"
-
 MenuButton :: enum i32 {
     StartGame,
     Options,

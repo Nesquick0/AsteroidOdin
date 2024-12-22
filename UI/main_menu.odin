@@ -1,7 +1,6 @@
 package UI
 
 import rl "vendor:raylib"
-import "core:strings"
 
 draw_main_menu :: proc(main_menu_state: ^MainMenuState, screen_width: i32, screen_height: i32) -> MenuTag {
     // Clear background

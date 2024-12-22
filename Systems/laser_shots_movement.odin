@@ -1,14 +1,17 @@
-﻿package Systems
+﻿#+vet !unused-imports
+package Systems
 
 import rl "vendor:raylib"
 import "../Entities"
 import "../Constants"
+import "../Components"
+import "core:fmt"
 
 import "../tracy"
 
 system_laser_shot_movement :: proc(game_state: ^Entities.GameState, delta_time: f32) {
     // Update laser shot positions based on velocity.
-    for &e, i in game_state.entities {
+    for &e in game_state.entities {
         laser_shot_entity, e_ok := &e.derived.(Entities.LaserShot)
         if e_ok {
             laser_shot_entity.transform.translation += laser_shot_entity.velocity * delta_time
@@ -19,11 +22,49 @@ system_laser_shot_movement :: proc(game_state: ^Entities.GameState, delta_time: 
             laser_shot_entity.time_to_live -= delta_time
             if laser_shot_entity.time_to_live <= 0.0 {
                 // Delete laser shot.
-                unordered_remove(&game_state.entities, i)
+                remove_entity_from_game_state(game_state, laser_shot_entity)
                 free(laser_shot_entity)
+                continue
+            }
+
+            // Check if laser shot is colliding with an asteroid.
+            if (check_laser_shot_collision(game_state, laser_shot_entity)) {
+                remove_entity_from_game_state(game_state, laser_shot_entity)
+                free(laser_shot_entity)
+                continue
             }
         }
     }
+}
+
+check_laser_shot_collision :: proc(game_state: ^Entities.GameState, laser_shot_entity: ^Entities.LaserShot) -> bool {
+    // Check if laser shot is colliding with an asteroid.
+    for &e in game_state.entities {
+        asteroid_entity, e_ok := &e.derived.(Entities.Asteroid)
+        if e_ok {
+            hit := rl.CheckCollisionSpheres(laser_shot_entity.transform.translation, 1.0,
+                asteroid_entity.transform.translation, asteroid_entity.size/2)
+            if (hit) {
+                destroy_asteroid(game_state, asteroid_entity)
+                return true
+            }
+        }
+    }
+    return false
+}
+
+destroy_asteroid :: proc(game_state: ^Entities.GameState, asteroid_entity: ^Entities.Asteroid) {
+    switch asteroid_entity.asteroid_type {
+    case Components.AsteroidType.Small:
+        game_state.score += 4
+    case Components.AsteroidType.Medium:
+        game_state.score += 2
+    case Components.AsteroidType.Large:
+        game_state.score += 1
+    }
+
+    remove_entity_from_game_state(game_state, asteroid_entity)
+    free(asteroid_entity)
 }
 
 draw_laser_shots :: proc(game_state: ^Entities.GameState) {

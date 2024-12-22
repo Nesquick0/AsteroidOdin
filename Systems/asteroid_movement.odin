@@ -1,3 +1,4 @@
+#+vet !unused-imports
 package Systems
 
 import rl "vendor:raylib"
@@ -57,9 +58,7 @@ draw_asteroids :: proc(game_state: ^Entities.GameState) {
 
             // Draw debug sphere around asteroid position.
             when (false) {
-                model_bounds := rl.GetModelBoundingBox(asteroid_entity.model)
-                model_size := rl.Vector3Distance(model_bounds.min, model_bounds.max) * asteroid_entity.transform.scale.x
-                rl.DrawSphereWires(asteroid_entity.transform.translation, model_size/2, 8, 8, rl.GREEN)
+                rl.DrawSphereWires(asteroid_entity.transform.translation, asteroid_entity.size/2, 8, 8, rl.GREEN)
             }
         }
     }

@@ -1,7 +1,5 @@
 ﻿package UI
 
-import rl "vendor:raylib"
-
 OptionsMenuButton :: enum i32 {
     DrawDistance,
     MouseSpeed,

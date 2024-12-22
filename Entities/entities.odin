@@ -36,4 +36,6 @@ Asteroid :: struct {
     using entity: Entity,
     model: rl.Model,
     asteroid_type: Components.AsteroidType,
+    bounding_box: rl.BoundingBox,
+    size: f32,
 }

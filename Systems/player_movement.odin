@@ -1,7 +1,7 @@
+#+vet !unused-imports
 package Systems
 
 import rl "vendor:raylib"
-import "core:math"
 import "../Entities"
 import "../Constants"
 

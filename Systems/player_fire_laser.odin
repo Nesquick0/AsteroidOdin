@@ -38,13 +38,11 @@ system_player_fire_laser :: proc(game_state: ^Entities.GameState, delta_time: f3
 get_laser_position :: proc(player_entity: ^Entities.Player, weapon_id: Components.WeaponId) -> (rl.Vector3, rl.Vector3) {
     // Get player position.
     player_position := player_entity.transform.translation
-
     // Get player direction.
     player_direction := rl.Vector3Transform(rl.Vector3{1.0, 0.0, 0.0}, get_player_model_matrix(player_entity))
 
     // Get player matrix.
-    player_matrix := rl.MatrixLookAt(player_entity.transform.translation,
-        player_entity.transform.translation + player_direction, rl.Vector3{0.0, 1.0, 0.0})
+    player_matrix := rl.MatrixLookAt(player_position,  player_position + player_direction, rl.Vector3{0.0, 1.0, 0.0})
 
     // Get laser position.
     local_position_offset := rl.Vector3{0.0, 0.0, 0.0}

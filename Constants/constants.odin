@@ -1,10 +1,10 @@
 ﻿package Constants
 
-import rl "vendor:raylib"
-
 WORLD_SIZE :: 100.0
+
 PLAYER_MAX_SPEED :: 100.0
 PLAYER_ACCELERATION :: 10.0
 PLAYER_LASER_RELOAD_TIME :: 0.5
+
 LASER_SHOT_TTL :: 10.0
 LASER_SHOT_VELOCITY :: 10.0

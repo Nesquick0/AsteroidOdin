@@ -1,7 +1,6 @@
 package main
 
 import "core:fmt"
-import "base:runtime"
 import "core:mem"
 import rl "vendor:raylib"
 
@@ -113,7 +112,7 @@ run :: proc() {
             new_menu_Tag : UI.MenuTag = UI.draw_game_hud(&e, game_state.screen_width, game_state.screen_height)
             #partial switch new_menu_Tag {
             case UI.MenuTag.MainMenu:
-                result := false
+                result = false
             }
             // Return to main menu if game is over.
             if !result {
