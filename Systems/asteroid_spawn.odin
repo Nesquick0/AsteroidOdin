@@ -39,8 +39,8 @@ system_asteroid_spawn :: proc(game_state: ^Entities.GameState, delta_time: f32) 
         asteroid_entity.velocity = random_velocity
 
         // Compute bounding box.
-        asteroid_entity.bounding_box = rl.GetModelBoundingBox(asteroid_entity.model)
-        asteroid_entity.size = rl.Vector3Distance(asteroid_entity.bounding_box.min, asteroid_entity.bounding_box.max) * asteroid_entity.transform.scale.x
+        bounding_box := rl.GetModelBoundingBox(asteroid_entity.model)
+        asteroid_entity.size = rl.Vector3Distance(bounding_box.min, bounding_box.max) * asteroid_entity.transform.scale.x
     }
 }
 

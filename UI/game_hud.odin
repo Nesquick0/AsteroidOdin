@@ -3,6 +3,22 @@
 import rl "vendor:raylib"
 
 draw_game_hud :: proc(game_state: ^GameHudState, screen_width: i32, screen_height: i32) -> MenuTag {
+    // Check ESC key for exit.
+    if rl.IsKeyPressed(.ESCAPE) {
+        return MenuTag.MainMenu
+    }
+
+    // Game is over.
+    if (game_state.game_over) {
+        rl.DrawText("Game Over", screen_width/2 - rl.MeasureText("Game Over", 100)/2, screen_height/2, 100, rl.RED)
+        // Show final score.
+        score_text := rl.TextFormat("Score: %d", game_state.score)
+        score_text_size := rl.MeasureText(score_text, 20)
+        rl.DrawText(score_text, screen_width/2 - score_text_size/2, screen_height/2 + 100, 20, rl.LIME)
+        return MenuTag.GameMenu
+    }
+
+    // Game is running.
     score_text := rl.TextFormat("Score: %d", game_state.score)
     time_text := rl.TextFormat("Time: %.1f", game_state.time)
     asteroids_text := rl.TextFormat("Asteroids: %d", game_state.asteroids)

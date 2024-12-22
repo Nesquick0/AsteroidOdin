@@ -65,6 +65,7 @@ run :: proc() {
     rl.InitWindow(game_state.screen_width, game_state.screen_height, "Odin Asteroid")
     defer rl.CloseWindow()
 
+    rl.SetExitKey(rl.KeyboardKey.KEY_NULL); // Disable ESC key
     //rl.SetTargetFPS(60)
 
     load_shader(&game_state)

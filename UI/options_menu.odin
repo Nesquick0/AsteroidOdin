@@ -27,6 +27,11 @@ draw_options_menu :: proc(options_menu_state: ^OptionsMenuState, screen_width: i
         buttons_positions[i].rect.height = 50
     }
 
+    // Check ESC key for main menu.
+    if rl.IsKeyPressed(.ESCAPE) {
+        return MenuTag.MainMenu
+    }
+
     // Check keyboard input
     if rl.IsKeyPressed(.UP) {
         options_menu_state.selected_button = OptionsMenuButton((i32(options_menu_state.selected_button) - 1) % i32(OptionsMenuButton.Count))

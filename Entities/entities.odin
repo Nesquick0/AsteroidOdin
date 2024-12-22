@@ -24,6 +24,7 @@ Player :: struct {
     weapon_id: Components.WeaponId,
     model: rl.Model,
     camera_pos: rl.Matrix,
+    size: f32,
 }
 
 LaserShot :: struct {
@@ -36,6 +37,5 @@ Asteroid :: struct {
     using entity: Entity,
     model: rl.Model,
     asteroid_type: Components.AsteroidType,
-    bounding_box: rl.BoundingBox,
     size: f32,
 }

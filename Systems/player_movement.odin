@@ -57,6 +57,11 @@ system_player_movement :: proc(game_state: ^Entities.GameState, delta_time: f32)
 
     //rl.DrawText(vec3_to_string("Pos ", player_entity.transform.translation), 10, 40, 10, rl.WHITE)
     //rl.DrawText(vec3_to_string("Vel ", player_entity.velocity), 10, 50, 10, rl.WHITE)
+
+    asteroid_hit := check_asteroid_collision(game_state, player_entity)
+    if asteroid_hit {
+
+    }
 }
 
 get_player_entity :: proc(game_state: ^Entities.GameState) -> ^Entities.Player {
@@ -77,6 +82,22 @@ get_player_model_matrix :: proc(player_entity: ^Entities.Player) -> rl.Matrix {
     rl.Vector3{0.0, 1.0, 0.0},
     rl.Vector3{0.0, 0.0, 1.0}) * rotation_matrix
     return rotation_matrix
+}
+
+check_asteroid_collision :: proc(game_state: ^Entities.GameState, player_entity: ^Entities.Player) -> bool {
+    // Check if any asteroid collides with player.
+    for &e in game_state.entities {
+        asteroid_entity, e_ok := &e.derived.(Entities.Asteroid)
+        if e_ok {
+            hit := rl.CheckCollisionSpheres(player_entity.transform.translation, player_entity.size/2,
+                asteroid_entity.transform.translation, asteroid_entity.size/2)
+            if (hit) {
+                game_state.game_over = true
+                return true
+            }
+        }
+    }
+    return false
 }
 
 draw_player :: proc(game_state: ^Entities.GameState) {

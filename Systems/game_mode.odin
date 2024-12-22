@@ -18,6 +18,7 @@ start_game :: proc(game_state: ^Entities.GameState) {
     game_state.start_time = rl.GetTime()
     game_state.level_tag = Entities.LevelTag.GameLevel
     game_state.score = 0
+    game_state.game_over = false
     game_state.camera = rl.Camera{
         position = rl.Vector3{1.0, 1.0, 1.0},
         target = rl.Vector3{0.0, 0.0, 0.0},
@@ -37,6 +38,9 @@ start_game :: proc(game_state: ^Entities.GameState) {
     for i in 0..<player_entity.model.materialCount {
         player_entity.model.materials[i].shader = game_state.shader_lighting
     }
+    bounding_box := rl.GetModelBoundingBox(player_entity.model)
+    // Use smaller size for player.
+    player_entity.size = rl.Vector3Distance(bounding_box.min, bounding_box.max) * player_entity.transform.scale.x * 0.5
     append(&game_state.entities, player_entity)
 
     create_light(Entities.LightType.Directional, {0.0, 0.0, 0.0}, rl.Vector3Normalize({0.1, -1.0, 0.1}), rl.Color{255,255,255,255}, game_state.shader_lighting)
@@ -56,13 +60,17 @@ run_game :: proc(game_state: ^Entities.GameState) -> bool {
         // Update score.
         game_hud_state.score = game_state.score
         // Update time.
-        game_hud_state.time = rl.GetTime() - game_state.start_time
+        if (!game_state.game_over) {
+            game_hud_state.time = rl.GetTime() - game_state.start_time
+        }
         // Update asteroids.
         game_hud_state.asteroids = get_num_asteroids(game_state)
+        // Update game over.
+        game_hud_state.game_over = game_state.game_over
     }
 
     // Run all game systems.
-    {
+    if (!game_state.game_over) {
         when TRACY_ENABLE{
             tracy.ZoneN("Game systems");
         }
@@ -101,6 +109,8 @@ run_game :: proc(game_state: ^Entities.GameState) -> bool {
 }
 
 close_game :: proc(game_state: ^Entities.GameState) {
+    rl.EnableCursor()
+
     // Delete all entities.
     for &e in game_state.entities {
         switch &e_derived in e.derived {
@@ -110,9 +120,12 @@ close_game :: proc(game_state: ^Entities.GameState) {
             free(&e_derived)
         case Entities.Asteroid:
             free(&e_derived)
+        case:
+            fmt.eprintfln("Unknown entity type.")
         }
     }
     delete(game_state.entities)
+    clear(&game_state.entities)
 }
 
 update_camera :: proc(game_state: ^Entities.GameState, delta_time: f32) {

@@ -5,4 +5,5 @@ GameHudState :: struct {
     time: f64,
     score: i32,
     asteroids: i32,
+    game_over: bool,
 }

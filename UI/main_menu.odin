@@ -23,6 +23,11 @@ draw_main_menu :: proc(main_menu_state: ^MainMenuState, screen_width: i32, scree
         buttons_positions[i].rect.height = 50
     }
 
+    // Check ESC key for exit.
+    if rl.IsKeyPressed(.ESCAPE) {
+        return MenuTag.ExitGame
+    }
+
     // Check keyboard input
     if rl.IsKeyPressed(.UP) {
         main_menu_state.selected_button = MenuButton((i32(main_menu_state.selected_button) - 1) % i32(MenuButton.Count))
