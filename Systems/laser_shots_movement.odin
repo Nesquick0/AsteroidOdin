@@ -80,7 +80,7 @@ draw_laser_shots :: proc(game_state: ^Entities.GameState) {
 
             // TODO: Optimize to only draw objects in view frustum.
             // Draw repetition of actual world.
-            num_iterations :: 2
+            num_iterations :: Constants.MAX_DRAW_ITERATIONS
             for x in -num_iterations..=num_iterations {
                 for y in -num_iterations..=num_iterations {
                     for z in -num_iterations..=num_iterations {

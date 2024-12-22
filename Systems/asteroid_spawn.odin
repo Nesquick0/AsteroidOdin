@@ -6,6 +6,10 @@ import "../Constants"
 import "../Components"
 
 system_asteroid_spawn :: proc(game_state: ^Entities.GameState, delta_time: f32) {
+    // Increase number of asteroids with time.
+    game_time := rl.GetTime() - game_state.start_time
+    game_state.max_asteroids = Constants.INITIAL_ASTEROID_COUNT + i32(game_time/Constants.ASTEROID_INCREASE_TIME)
+
     // Count asteriods. Spawn new if necessary.
     num_asteroids := get_num_asteroids(game_state)
     if num_asteroids < game_state.max_asteroids {

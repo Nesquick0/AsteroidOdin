@@ -4,11 +4,15 @@ import rl "vendor:raylib"
 
 draw_game_hud :: proc(game_state: ^GameHudState, screen_width: i32, screen_height: i32) -> MenuTag {
     score_text := rl.TextFormat("Score: %d", game_state.score)
+    time_text := rl.TextFormat("Time: %.1f", game_state.time)
     asteroids_text := rl.TextFormat("Asteroids: %d", game_state.asteroids)
 
-    // Draw score in top right corner.
+    // Draw score in top middle.
     score_text_size := rl.MeasureText(score_text, 20)
-    rl.DrawText(score_text, screen_width-10 - score_text_size, 10, 20, rl.WHITE)
+    rl.DrawText(score_text, screen_width/2 - score_text_size/2, 10, 20, rl.WHITE)
+    // Draw time in top right corner.
+    time_text_size := rl.MeasureText(time_text, 20)
+    rl.DrawText(time_text, screen_width-10 - time_text_size, 10, 20, rl.WHITE)
     // Draw asteroids in top right corner.
     asteroids_text_size := rl.MeasureText(asteroids_text, 20)
     rl.DrawText(asteroids_text, screen_width-10 - asteroids_text_size, 40, 20, rl.WHITE)

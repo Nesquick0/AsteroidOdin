@@ -25,7 +25,7 @@ start_game :: proc(game_state: ^Entities.GameState) {
         fovy = 60.0,
         projection = rl.CameraProjection.PERSPECTIVE,
     }
-    game_state.max_asteroids = 10
+    game_state.max_asteroids = 0
 
     // Spawn player entity.
     new_entity := Entities.new_entity(Entities.Player)
@@ -55,6 +55,8 @@ run_game :: proc(game_state: ^Entities.GameState) -> bool {
     if e_ok {
         // Update score.
         game_hud_state.score = game_state.score
+        // Update time.
+        game_hud_state.time = rl.GetTime() - game_state.start_time
         // Update asteroids.
         game_hud_state.asteroids = get_num_asteroids(game_state)
     }
