@@ -14,7 +14,7 @@ BaseMenu :: struct {
     derived: any,
 }
 
-new_menu :: proc($T: typeid) -> BaseMenu {
+new_menu :: proc($T: typeid) -> ^BaseMenu {
     t := new(T)
     t.derived = t^
     return t

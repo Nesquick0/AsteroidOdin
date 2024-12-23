@@ -16,7 +16,7 @@ GameState :: struct {
 
     level_tag: LevelTag,
     score: i32,
-    menu_state: UI.BaseMenu,
+    menu_state: ^UI.BaseMenu,
     game_over: bool,
 
     draw_distance: f32,
