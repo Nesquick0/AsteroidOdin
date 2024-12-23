@@ -65,6 +65,6 @@ spawn_laser :: proc(game_state: ^Entities.GameState, start_pos: rl.Vector3, star
     laser_entity.transform.rotation = rl.QuaternionFromEuler(0.0, 0.0, 0.0)
     laser_entity.transform.scale = rl.Vector3{1.0, 0.0, 0.0}
     //laser_entity.model = rl.LoadModel("Data/laser_gltf/scene.gltf")
-    append(&game_state.entities, laser_entity)
+    append(&game_state.entities, new_entity)
     return laser_entity
 }

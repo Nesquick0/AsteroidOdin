@@ -66,7 +66,7 @@ spawn_asteroid_at_location :: proc(game_state: ^Entities.GameState, location: rl
     for i in 0..<asteroid_entity.model.materialCount {
         asteroid_entity.model.materials[i].shader = game_state.shader_lighting
     }
-    append(&game_state.entities, asteroid_entity)
+    append(&game_state.entities, new_entity)
     return asteroid_entity
 }
 

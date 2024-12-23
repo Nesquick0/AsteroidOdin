@@ -32,5 +32,5 @@ GameState :: struct {
 
     max_asteroids: i32,
 
-    entities: [dynamic]Entity,
+    entities: [dynamic]^Entity,
 }

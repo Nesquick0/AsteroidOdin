@@ -41,7 +41,7 @@ start_game :: proc(game_state: ^Entities.GameState) {
     bounding_box := rl.GetModelBoundingBox(player_entity.model)
     // Use smaller size for player.
     player_entity.size = rl.Vector3Distance(bounding_box.min, bounding_box.max) * player_entity.transform.scale.x * 0.5
-    append(&game_state.entities, player_entity)
+    append(&game_state.entities, new_entity)
 
     create_light(Entities.LightType.Directional, {0.0, 0.0, 0.0}, rl.Vector3Normalize({0.1, -1.0, 0.1}), rl.Color{255,255,255,255}, game_state.shader_lighting)
 }
@@ -112,20 +112,12 @@ close_game :: proc(game_state: ^Entities.GameState) {
     rl.EnableCursor()
 
     // Delete all entities.
-    for &e in game_state.entities {
-        switch &e_derived in e.derived {
-        case Entities.Player:
-            free(&e_derived)
-        case Entities.LaserShot:
-            free(&e_derived)
-        case Entities.Asteroid:
-            free(&e_derived)
-        case:
-            fmt.eprintfln("Unknown entity type.")
-        }
+    for e in game_state.entities {
+        free(e)
     }
-    delete(game_state.entities)
+    // Clear and shrink entities array (get rid of any memory allocated).
     clear(&game_state.entities)
+    shrink(&game_state.entities, 0)
 }
 
 update_camera :: proc(game_state: ^Entities.GameState, delta_time: f32) {
@@ -192,22 +184,9 @@ vec3_to_string :: proc(text: cstring, v: rl.Vector3) -> cstring {
 
 remove_entity_from_game_state :: proc(game_state: ^Entities.GameState, entity: ^Entities.Entity) {
     for &e, i in game_state.entities {
-        switch &e_derived in e.derived {
-        case Entities.Player:
-            if (&e_derived == entity) {
-                unordered_remove(&game_state.entities, i)
-                return
-            }
-        case Entities.LaserShot:
-            if (&e_derived == entity) {
-                unordered_remove(&game_state.entities, i)
-                return
-            }
-        case Entities.Asteroid:
-            if (&e_derived == entity) {
-                unordered_remove(&game_state.entities, i)
-                return
-            }
+        if (e == entity) {
+            unordered_remove(&game_state.entities, i)
+            return
         }
     }
     fmt.eprintfln("Entity not found in game state.")

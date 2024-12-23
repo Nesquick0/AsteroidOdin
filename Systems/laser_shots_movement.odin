@@ -22,15 +22,15 @@ system_laser_shot_movement :: proc(game_state: ^Entities.GameState, delta_time: 
             laser_shot_entity.time_to_live -= delta_time
             if laser_shot_entity.time_to_live <= 0.0 {
                 // Delete laser shot.
-                remove_entity_from_game_state(game_state, laser_shot_entity)
-                free(laser_shot_entity)
+                remove_entity_from_game_state(game_state, laser_shot_entity.entity)
+                free(laser_shot_entity.entity)
                 continue
             }
 
             // Check if laser shot is colliding with an asteroid.
             if (check_laser_shot_collision(game_state, laser_shot_entity)) {
-                remove_entity_from_game_state(game_state, laser_shot_entity)
-                free(laser_shot_entity)
+                remove_entity_from_game_state(game_state, laser_shot_entity.entity)
+                free(laser_shot_entity.entity)
                 continue
             }
         }
@@ -63,8 +63,8 @@ destroy_asteroid :: proc(game_state: ^Entities.GameState, asteroid_entity: ^Enti
         game_state.score += 1
     }
 
-    remove_entity_from_game_state(game_state, asteroid_entity)
-    free(asteroid_entity)
+    remove_entity_from_game_state(game_state, asteroid_entity.entity)
+    free(asteroid_entity.entity)
 }
 
 draw_laser_shots :: proc(game_state: ^Entities.GameState) {
