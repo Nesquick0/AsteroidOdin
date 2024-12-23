@@ -64,18 +64,18 @@ system_player_movement :: proc(game_state: ^Entities.GameState, delta_time: f32)
     }
 }
 
-get_player_entity :: proc(game_state: ^Entities.GameState) -> ^Entities.Player {
+get_player_entity :: proc(game_state: ^Entities.GameState) -> ^Entities.Entity {
     // Iterate all entities until correct one found.
     for &e in game_state.entities {
-        player_entity, e_ok := &e.derived.(Entities.Player)
-        if e_ok {
-            return player_entity
+        #partial switch &e_logic in e.logic {
+        case Entities.Player:
+            return &e
         }
     }
     return nil
 }
 
-get_player_model_matrix :: proc(player_entity: ^Entities.Player) -> rl.Matrix {
+get_player_model_matrix :: proc(player_entity: ^Entities.Entity) -> rl.Matrix {
     rotation_matrix := rl.QuaternionToMatrix(player_entity.transform.rotation)
     rotation_matrix = rl.MatrixLookAt(
     rl.Vector3{0.0, 0.0, 0.0},
@@ -84,13 +84,14 @@ get_player_model_matrix :: proc(player_entity: ^Entities.Player) -> rl.Matrix {
     return rotation_matrix
 }
 
-check_asteroid_collision :: proc(game_state: ^Entities.GameState, player_entity: ^Entities.Player) -> bool {
+check_asteroid_collision :: proc(game_state: ^Entities.GameState, player_entity: ^Entities.Entity) -> bool {
     // Check if any asteroid collides with player.
     for &e in game_state.entities {
-        asteroid_entity, e_ok := &e.derived.(Entities.Asteroid)
-        if e_ok {
-            hit := rl.CheckCollisionSpheres(player_entity.transform.translation, player_entity.size/2,
-                asteroid_entity.transform.translation, asteroid_entity.size/2)
+        #partial switch &e_logic in e.logic {
+        case Entities.Asteroid:
+            hit := rl.CheckCollisionSpheres(player_entity.transform.translation,
+                player_entity.shape.(Entities.Model).size/2,
+                e.transform.translation, e.shape.(Entities.Model).size/2)
             if (hit) {
                 game_state.game_over = true
                 return true
@@ -112,29 +113,32 @@ draw_player :: proc(game_state: ^Entities.GameState) {
     rotation_matrix := get_player_model_matrix(player_entity)
 
     // Rotate model.
-    player_entity.model.transform = rotation_matrix * local_translation
+    #partial switch &e_shape in player_entity.shape {
+    case Entities.Model:
+        e_shape.model.transform = rotation_matrix * local_translation
 
-    // Draw player model.
-    //rl.DrawModel(player_entity.model, player_entity.transform.translation, player_entity.transform.scale.x, rl.WHITE)
+        // Draw player model.
+        //rl.DrawModel(e_shape.model, player_entity.transform.translation, player_entity.transform.scale.x, rl.WHITE)
 
-    // TODO: Optimize to only draw objects in view frustum.
-    // Draw repetition of actual world.
-    num_iterations :: Constants.MAX_DRAW_ITERATIONS
-    for x in -num_iterations..=num_iterations {
-        for y in -num_iterations..=num_iterations {
-            for z in -num_iterations..=num_iterations {
-                rl.DrawModel(player_entity.model,
-                    player_entity.transform.translation + rl.Vector3{f32(x)*Constants.WORLD_SIZE, f32(y)*Constants.WORLD_SIZE, f32(z)*Constants.WORLD_SIZE},
-                    player_entity.transform.scale.x, rl.WHITE)
+        // TODO: Optimize to only draw objects in view frustum.
+        // Draw repetition of actual world.
+        num_iterations :: Constants.MAX_DRAW_ITERATIONS
+        for x in -num_iterations..=num_iterations {
+            for y in -num_iterations..=num_iterations {
+                for z in -num_iterations..=num_iterations {
+                    rl.DrawModel(e_shape.model,
+                        player_entity.transform.translation + rl.Vector3{f32(x)*Constants.WORLD_SIZE, f32(y)*Constants.WORLD_SIZE, f32(z)*Constants.WORLD_SIZE},
+                        player_entity.transform.scale.x, rl.WHITE)
+                }
             }
         }
-    }
 
-    // Draw debug sphere around player position.
-    when (false) {
-        model_bounds := rl.GetModelBoundingBox(player_entity.model)
-        model_size := rl.Vector3Distance(model_bounds.min, model_bounds.max) * player_entity.transform.scale.x
-        rl.DrawSphereWires(player_entity.transform.translation, model_size/2, 8, 8, rl.GREEN)
+        // Draw debug sphere around player position.
+        when (false) {
+            model_bounds := rl.GetModelBoundingBox(player_entity.model)
+            model_size := rl.Vector3Distance(model_bounds.min, model_bounds.max) * player_entity.transform.scale.x
+            rl.DrawSphereWires(player_entity.transform.translation, model_size/2, 8, 8, rl.GREEN)
+        }
     }
     // Try to draw fire laser places.
     when (false)

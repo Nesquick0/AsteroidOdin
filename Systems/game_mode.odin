@@ -29,19 +29,24 @@ start_game :: proc(game_state: ^Entities.GameState) {
     game_state.max_asteroids = 0
 
     // Spawn player entity.
-    new_entity := Entities.new_entity(Entities.Player)
-    player_entity := &new_entity.derived.(Entities.Player)
+    player_entity := Entities.Entity{
+        shape = Entities.Model {},
+        logic = Entities.Player {}
+    }
     player_entity.transform.translation = rl.Vector3{Constants.WORLD_SIZE/2, Constants.WORLD_SIZE/2, Constants.WORLD_SIZE/2}
     player_entity.transform.rotation = rl.QuaternionFromEuler(0.0, 0.0, 0.0)
     player_entity.transform.scale = rl.Vector3{0.1, 0.0, 0.0}
-    player_entity.model = rl.LoadModel("Data/space_ranger_sr1_gltf/scene.gltf")
-    for i in 0..<player_entity.model.materialCount {
-        player_entity.model.materials[i].shader = game_state.shader_lighting
+    #partial switch &shape_model in player_entity.shape {
+    case Entities.Model:
+        shape_model.model = rl.LoadModel("Data/space_ranger_sr1_gltf/scene.gltf")
+        for i in 0..<shape_model.model.materialCount {
+            shape_model.model.materials[i].shader = game_state.shader_lighting
+        }
+        bounding_box := rl.GetModelBoundingBox(shape_model.model)
+        // Use smaller size for player.
+        shape_model.size = rl.Vector3Distance(bounding_box.min, bounding_box.max) * player_entity.transform.scale.x * 0.5
     }
-    bounding_box := rl.GetModelBoundingBox(player_entity.model)
-    // Use smaller size for player.
-    player_entity.size = rl.Vector3Distance(bounding_box.min, bounding_box.max) * player_entity.transform.scale.x * 0.5
-    append(&game_state.entities, new_entity)
+    append(&game_state.entities, player_entity)
 
     create_light(Entities.LightType.Directional, {0.0, 0.0, 0.0}, rl.Vector3Normalize({0.1, -1.0, 0.1}), rl.Color{255,255,255,255}, game_state.shader_lighting)
 }
@@ -55,8 +60,8 @@ run_game :: proc(game_state: ^Entities.GameState) -> bool {
     delta_time := rl.GetFrameTime()
 
     // Update UI data.
-    game_hud_state, e_ok := &game_state.menu_state.derived.(UI.GameHudState)
-    if e_ok {
+    switch &game_hud_state in game_state.menu_state.derived {
+    case UI.GameHudState:
         // Update score.
         game_hud_state.score = game_state.score
         // Update time.
@@ -111,10 +116,6 @@ run_game :: proc(game_state: ^Entities.GameState) -> bool {
 close_game :: proc(game_state: ^Entities.GameState) {
     rl.EnableCursor()
 
-    // Delete all entities.
-    for e in game_state.entities {
-        free(e)
-    }
     // Clear and shrink entities array (get rid of any memory allocated).
     clear(&game_state.entities)
     shrink(&game_state.entities, 0)
@@ -184,7 +185,7 @@ vec3_to_string :: proc(text: cstring, v: rl.Vector3) -> cstring {
 
 remove_entity_from_game_state :: proc(game_state: ^Entities.GameState, entity: ^Entities.Entity) {
     for &e, i in game_state.entities {
-        if (e == entity) {
+        if (&e == entity) {
             unordered_remove(&game_state.entities, i)
             return
         }

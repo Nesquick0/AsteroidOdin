@@ -21,7 +21,6 @@ new_entity :: proc($T: typeid) -> ^Entity {
 
 Player :: struct {
     using entity: Entity,
-    player_type: Components.PlayerType,
     reload_countdown: f32,
     weapon_id: Components.WeaponId,
     model: rl.Model,
@@ -44,6 +43,7 @@ Asteroid :: struct {
 */
 
 
+/*
 // Entities as union.
 Entity :: struct {
     transform: rl.Transform,
@@ -64,7 +64,6 @@ new_entity :: proc($T: typeid) -> ^Entity {
 
 Player :: struct {
     using entity: ^Entity,
-    player_type: Components.PlayerType,
     reload_countdown: f32,
     weapon_id: Components.WeaponId,
     model: rl.Model,
@@ -83,4 +82,35 @@ Asteroid :: struct {
     model: rl.Model,
     asteroid_type: Components.AsteroidType,
     size: f32,
+}
+*/
+
+// Entities as composition.
+Entity :: struct {
+    transform: rl.Transform,
+    velocity: rl.Vector3,
+    ang_velocity: rl.Vector3,
+
+    shape: union {SimpleLine, Model},
+    logic: union {Player, LaserShot, Asteroid},
+}
+
+// Models
+SimpleLine :: struct {}
+Model :: struct {
+    model: rl.Model,
+    size: f32,
+}
+
+// Logic
+Player :: struct {
+    reload_countdown: f32,
+    weapon_id: Components.WeaponId,
+    camera_pos: rl.Matrix,
+}
+LaserShot :: struct {
+    time_to_live: f32,
+}
+Asteroid :: struct {
+    asteroid_type: Components.AsteroidType,
 }

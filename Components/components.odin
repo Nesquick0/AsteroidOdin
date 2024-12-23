@@ -1,7 +1,5 @@
 ﻿package Components
 
-PlayerType :: struct { }
-
 AsteroidType :: enum i32 {
     Small,
     Medium,
@@ -11,8 +9,8 @@ AsteroidType :: enum i32 {
 WeaponId :: enum i32 {
     Left,
     Right,
-    Count,
 }
+WEAPON_ID_COUNT :: i32(WeaponId.Right) + 1
 
 get_asteroid_size :: proc(asteroid_type: AsteroidType) -> f32 {
     switch asteroid_type {

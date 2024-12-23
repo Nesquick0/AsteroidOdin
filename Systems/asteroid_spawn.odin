@@ -34,13 +34,18 @@ system_asteroid_spawn :: proc(game_state: ^Entities.GameState, delta_time: f32) 
 
         // Spawn asteroid.
         asteroid_entity := spawn_asteroid_at_location(game_state, random_position)
-        asteroid_entity.asteroid_type = Components.AsteroidType.Large
-        asteroid_entity.transform.scale = rl.Vector3{Components.get_asteroid_size(asteroid_entity.asteroid_type), 0.0, 0.0}
+        #partial switch &e_logic in asteroid_entity.logic {
+        case Entities.Asteroid:
+            e_logic.asteroid_type = Components.AsteroidType.Large
+            asteroid_entity.transform.scale = rl.Vector3{Components.get_asteroid_size(e_logic.asteroid_type), 0.0, 0.0}
+        }
+        #partial switch &e_shape in asteroid_entity.shape {
+        case Entities.Model:
+            bounding_box := rl.GetModelBoundingBox(e_shape.model)
+            // Use smaller size for player.
+            e_shape.size = rl.Vector3Distance(bounding_box.min, bounding_box.max) * asteroid_entity.transform.scale.x
+        }
         asteroid_entity.velocity = random_velocity
-
-        // Compute bounding box.
-        bounding_box := rl.GetModelBoundingBox(asteroid_entity.model)
-        asteroid_entity.size = rl.Vector3Distance(bounding_box.min, bounding_box.max) * asteroid_entity.transform.scale.x
     }
 }
 
@@ -48,26 +53,31 @@ get_num_asteroids :: proc(game_state: ^Entities.GameState) -> i32 {
     // Iterate all entities until correct one found.
     num_asteroids : i32 = 0
     for &e in game_state.entities {
-        _, e_ok := &e.derived.(Entities.Asteroid)
-        if e_ok {
+        #partial switch &e_logic in e.logic {
+        case Entities.Asteroid:
             num_asteroids += 1
         }
     }
     return num_asteroids
 }
 
-spawn_asteroid_at_location :: proc(game_state: ^Entities.GameState, location: rl.Vector3) -> ^Entities.Asteroid {
-    new_entity := Entities.new_entity(Entities.Asteroid)
-    asteroid_entity := &new_entity.derived.(Entities.Asteroid)
+spawn_asteroid_at_location :: proc(game_state: ^Entities.GameState, location: rl.Vector3) -> ^Entities.Entity {
+    asteroid_entity := Entities.Entity{
+        shape = Entities.Model {},
+        logic = Entities.Asteroid {}
+    }
     asteroid_entity.transform.translation = location
     asteroid_entity.transform.rotation = rl.QuaternionFromEuler(0.0, 0.0, 0.0)
     asteroid_entity.transform.scale = rl.Vector3{1.0, 0.0, 0.0}
-    asteroid_entity.model = rl.LoadModel("Data/ps1_style_low_poly_asteroids_gltf/asteroid.glb")
-    for i in 0..<asteroid_entity.model.materialCount {
-        asteroid_entity.model.materials[i].shader = game_state.shader_lighting
+    #partial switch &shape_model in asteroid_entity.shape {
+    case Entities.Model:
+        shape_model.model = rl.LoadModel("Data/ps1_style_low_poly_asteroids_gltf/asteroid.glb")
+        for i in 0..<shape_model.model.materialCount {
+            shape_model.model.materials[i].shader = game_state.shader_lighting
+        }
     }
-    append(&game_state.entities, new_entity)
-    return asteroid_entity
+    append(&game_state.entities, asteroid_entity)
+    return &game_state.entities[len(game_state.entities)-1]
 }
 
 get_random_vec3_normalized :: proc() -> rl.Vector3 {
