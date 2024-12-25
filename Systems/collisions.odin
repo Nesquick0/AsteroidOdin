@@ -40,7 +40,7 @@ check_laser_shot_collision :: proc(game_state: ^Entities.GameState, laser_shot_e
         #partial switch &e_logic in e.logic {
         case Entities.Asteroid:
             hit := rl.CheckCollisionSpheres(laser_shot_entity.transform.translation, 1.0,
-            e.transform.translation, e.shape.(Entities.Model).size/2)
+                e.transform.translation, e.shape.(Entities.Model).size / 2)
             if (hit) {
                 // Remove laser shot.
                 remove_entity_from_game_state(game_state, laser_shot_entity)

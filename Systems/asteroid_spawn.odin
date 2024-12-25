@@ -74,7 +74,8 @@ spawn_asteroid_at_location :: proc(game_state: ^Entities.GameState, location: rl
 
         bounding_box := rl.GetModelBoundingBox(e_shape.model)
         // Use smaller size for player.
-        e_shape.size = rl.Vector3Distance(bounding_box.min, bounding_box.max) * asteroid_entity.transform.scale.x
+        e_shape.size = rl.Vector3Distance(bounding_box.min, bounding_box.max) * asteroid_entity.transform.scale.x *
+            Constants.ASTEROID_COLLISION_SCALE
     }
 
     append(&game_state.entities, asteroid_entity)
