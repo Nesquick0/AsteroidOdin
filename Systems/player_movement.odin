@@ -1,13 +1,10 @@
-#+vet !unused-imports
 package Systems
 
 import rl "vendor:raylib"
 import "../Entities"
 import "../Constants"
 
-import "../tracy"
-
-system_player_movement :: proc(game_state: ^Entities.GameState, delta_time: f32) {
+system_player_input :: proc(game_state: ^Entities.GameState, delta_time: f32) {
     // Get player entity.
     player_entity := get_player_entity(game_state)
 
@@ -42,12 +39,6 @@ system_player_movement :: proc(game_state: ^Entities.GameState, delta_time: f32)
     velocity_size = rl.Clamp(velocity_size, -Constants.PLAYER_MAX_SPEED, Constants.PLAYER_MAX_SPEED)
     player_entity.velocity = velocity_dir * velocity_size
 
-    // Update player position
-    player_entity.transform.translation += player_entity.velocity * delta_time
-
-    // Loop player position in world bounds.
-    player_entity.transform.translation = Constants.loop_position(player_entity.transform.translation)
-
     // Update player rotation.
     skip_rotation := rl.IsKeyDown(.LEFT_ALT)
     if (!skip_rotation)
@@ -57,11 +48,6 @@ system_player_movement :: proc(game_state: ^Entities.GameState, delta_time: f32)
 
     //rl.DrawText(vec3_to_string("Pos ", player_entity.transform.translation), 10, 40, 10, rl.WHITE)
     //rl.DrawText(vec3_to_string("Vel ", player_entity.velocity), 10, 50, 10, rl.WHITE)
-
-    asteroid_hit := check_asteroid_collision(game_state, player_entity)
-    if asteroid_hit {
-
-    }
 }
 
 get_player_entity :: proc(game_state: ^Entities.GameState) -> ^Entities.Entity {
@@ -82,70 +68,4 @@ get_player_model_matrix :: proc(player_entity: ^Entities.Entity) -> rl.Matrix {
     rl.Vector3{0.0, 1.0, 0.0},
     rl.Vector3{0.0, 0.0, 1.0}) * rotation_matrix
     return rotation_matrix
-}
-
-check_asteroid_collision :: proc(game_state: ^Entities.GameState, player_entity: ^Entities.Entity) -> bool {
-    // Check if any asteroid collides with player.
-    for &e in game_state.entities {
-        #partial switch &e_logic in e.logic {
-        case Entities.Asteroid:
-            hit := rl.CheckCollisionSpheres(player_entity.transform.translation,
-                player_entity.shape.(Entities.Model).size/2,
-                e.transform.translation, e.shape.(Entities.Model).size/2)
-            if (hit) {
-                game_state.game_over = true
-                return true
-            }
-        }
-    }
-    return false
-}
-
-draw_player :: proc(game_state: ^Entities.GameState) {
-    when TRACY_ENABLE{
-        tracy.Zone();
-    }
-    player_entity := get_player_entity(game_state)
-    // Custom model transform.
-    local_position_offset := rl.Vector3{-12.0, -3.0, -2.0}
-    local_translation := rl.MatrixTranslate(local_position_offset.x, local_position_offset.y, local_position_offset.z)
-
-    rotation_matrix := get_player_model_matrix(player_entity)
-
-    // Rotate model.
-    #partial switch &e_shape in player_entity.shape {
-    case Entities.Model:
-        e_shape.model.transform = rotation_matrix * local_translation
-
-        // Draw player model.
-        //rl.DrawModel(e_shape.model, player_entity.transform.translation, player_entity.transform.scale.x, rl.WHITE)
-
-        // TODO: Optimize to only draw objects in view frustum.
-        // Draw repetition of actual world.
-        num_iterations :: Constants.MAX_DRAW_ITERATIONS
-        for x in -num_iterations..=num_iterations {
-            for y in -num_iterations..=num_iterations {
-                for z in -num_iterations..=num_iterations {
-                    rl.DrawModel(e_shape.model,
-                        player_entity.transform.translation + rl.Vector3{f32(x)*Constants.WORLD_SIZE, f32(y)*Constants.WORLD_SIZE, f32(z)*Constants.WORLD_SIZE},
-                        player_entity.transform.scale.x, rl.WHITE)
-                }
-            }
-        }
-
-        // Draw debug sphere around player position.
-        when (false) {
-            model_bounds := rl.GetModelBoundingBox(player_entity.model)
-            model_size := rl.Vector3Distance(model_bounds.min, model_bounds.max) * player_entity.transform.scale.x
-            rl.DrawSphereWires(player_entity.transform.translation, model_size/2, 8, 8, rl.GREEN)
-        }
-    }
-    // Try to draw fire laser places.
-    when (false)
-    {
-        world_positionL, world_dirL := get_laser_position(player_entity, Entities.WeaponId.Left)
-        rl.DrawSphereWires(world_positionL, 0.1, 8, 8, rl.GREEN)
-        world_positionR, world_dirR := get_laser_position(player_entity, Entities.WeaponId.Right)
-        rl.DrawSphereWires(world_positionR, 0.1, 8, 8, rl.GREEN)
-    }
 }

@@ -79,11 +79,15 @@ run_game :: proc(game_state: ^Entities.GameState) -> bool {
         when TRACY_ENABLE{
             tracy.ZoneN("Game systems");
         }
-        system_player_movement(game_state, delta_time)
-        system_asteroid_spawn(game_state, delta_time)
-        system_asteroid_movement(game_state, delta_time)
         system_player_fire_laser(game_state, delta_time)
-        system_laser_shot_movement(game_state, delta_time)
+        system_player_input(game_state, delta_time)
+
+        system_update_movement(game_state, delta_time)
+
+        system_asteroid_spawn(game_state, delta_time)
+        system_laser_shot_update(game_state, delta_time)
+
+        system_check_collisions(game_state, delta_time)
     }
 
     // Update camera.
@@ -98,9 +102,6 @@ run_game :: proc(game_state: ^Entities.GameState) -> bool {
         defer rl.EndMode3D()
 
         update_light_values(game_state.shader_lighting, game_state.sun_light)
-
-        //rl.BeginShaderMode(game_state.shader_lighting)
-        //defer rl.EndShaderMode()
 
         //update_frustum_from_camera(&game_state.camera, f32(game_state.screen_width)/f32(game_state.screen_height),
         //    &game_state.frustum, game_state)

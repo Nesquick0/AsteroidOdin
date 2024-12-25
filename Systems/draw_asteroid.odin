@@ -7,18 +7,6 @@ import "../Constants"
 
 import "../tracy"
 
-system_asteroid_movement :: proc(game_state: ^Entities.GameState, delta_time: f32) {
-    // Update asteroid positions based on velocity.
-    for &e in game_state.entities {
-        #partial switch e_logic in e.logic {
-        case Entities.Asteroid:
-            e.transform.translation += e.velocity * delta_time
-            // Loop asteroid position in world bounds.
-            e.transform.translation = Constants.loop_position(e.transform.translation)
-        }
-    }
-}
-
 draw_asteroids :: proc(game_state: ^Entities.GameState) {
     when TRACY_ENABLE{
         tracy.Zone();
