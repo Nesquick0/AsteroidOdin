@@ -52,10 +52,10 @@ system_player_input :: proc(game_state: ^Entities.GameState, delta_time: f32) {
 
 get_player_entity :: proc(game_state: ^Entities.GameState) -> ^Entities.Entity {
     // Iterate all entities until correct one found.
-    for &e in game_state.entities {
+    for e in game_state.entities {
         #partial switch &e_logic in e.logic {
         case Entities.Player:
-            return &e
+            return e
         }
     }
     return nil

@@ -29,10 +29,9 @@ start_game :: proc(game_state: ^Entities.GameState) {
     game_state.max_asteroids = 0
 
     // Spawn player entity.
-    player_entity := Entities.Entity{
-        shape = Entities.Model {},
-        logic = Entities.Player {}
-    }
+    player_entity := new(Entities.Entity)
+    player_entity.shape = Entities.Model {}
+    player_entity.logic = Entities.Player {}
     player_entity.transform.translation = rl.Vector3{Constants.WORLD_SIZE/2, Constants.WORLD_SIZE/2, Constants.WORLD_SIZE/2}
     player_entity.transform.rotation = rl.QuaternionFromEuler(0.0, 0.0, 0.0)
     player_entity.transform.scale = rl.Vector3{0.1, 0.0, 0.0}
@@ -116,6 +115,10 @@ run_game :: proc(game_state: ^Entities.GameState) -> bool {
 
 close_game :: proc(game_state: ^Entities.GameState) {
     rl.EnableCursor()
+    // Free all entities.
+    for e in game_state.entities {
+        free(e)
+    }
 
     // Clear and shrink entities array (get rid of any memory allocated).
     clear(&game_state.entities)
@@ -185,9 +188,10 @@ vec3_to_string :: proc(text: cstring, v: rl.Vector3) -> cstring {
 }
 
 remove_entity_from_game_state :: proc(game_state: ^Entities.GameState, entity: ^Entities.Entity) {
-    for &e, i in game_state.entities {
-        if (&e == entity) {
+    for e, i in game_state.entities {
+        if (e == entity) {
             unordered_remove(&game_state.entities, i)
+            free(e)
             return
         }
     }

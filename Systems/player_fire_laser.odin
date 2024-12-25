@@ -63,14 +63,13 @@ get_laser_position :: proc(player_entity: ^Entities.Entity, weapon_id: Component
 }
 
 spawn_laser :: proc(game_state: ^Entities.GameState, start_pos: rl.Vector3, start_dir: rl.Vector3) -> ^Entities.Entity {
-    laser_entity := Entities.Entity{
-        shape = Entities.SimpleLine {},
-        logic = Entities.LaserShot {}
-    }
+    laser_entity := new(Entities.Entity)
+    laser_entity.shape = Entities.SimpleLine {}
+    laser_entity.logic = Entities.LaserShot {}
     laser_entity.transform.translation = start_pos
     laser_entity.transform.rotation = rl.QuaternionFromEuler(0.0, 0.0, 0.0)
     laser_entity.transform.scale = rl.Vector3{1.0, 0.0, 0.0}
     //laser_entity.model = rl.LoadModel("Data/laser_gltf/scene.gltf")
     append(&game_state.entities, laser_entity)
-    return &game_state.entities[len(game_state.entities)-1]
+    return game_state.entities[len(game_state.entities)-1]
 }
