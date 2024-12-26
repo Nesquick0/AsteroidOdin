@@ -2,6 +2,8 @@
 
 import rl "vendor:raylib"
 
+import "../Constants"
+
 draw_options_menu :: proc(options_menu_state: ^OptionsMenuState, screen_width: i32, screen_height: i32) -> MenuTag {
     // Clear background
     rl.ClearBackground(rl.BLACK)
@@ -59,8 +61,8 @@ draw_options_menu :: proc(options_menu_state: ^OptionsMenuState, screen_width: i
     // Draw view distance slider.
     {
         new_view_distance : f32 = options_menu_state.draw_distance
-        min_view_distance : f32 = 100.0
-        max_view_distance : f32 = 1_000.0
+        min_view_distance : f32 = Constants.WORLD_SIZE
+        max_view_distance : f32 = Constants.WORLD_SIZE*Constants.MAX_DRAW_ITERATIONS
         left_slider_text := rl.TextFormat("%.0f (%.0f)", min_view_distance, new_view_distance)
         right_slider_text := rl.TextFormat("%.0f", max_view_distance)
         rl.GuiSlider(rl.Rectangle{f32(screen_width)/2, f32(screen_height)/2, 300, 50},

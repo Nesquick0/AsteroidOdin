@@ -29,15 +29,16 @@ draw_asteroids :: proc(game_state: ^Entities.GameState) {
             // Rotate model.
             asteroid_entity_shape.model.transform = rotation_matrix * local_translation
 
-            // TODO: Optimize to only draw objects in view frustum.
             // Draw repetition of actual world.
             num_iterations :: Constants.MAX_DRAW_ITERATIONS
             for x in -num_iterations..=num_iterations {
                 for y in -num_iterations..=num_iterations {
                     for z in -num_iterations..=num_iterations {
-                        rl.DrawModel(asteroid_entity_shape.model,
-                        e.transform.translation + rl.Vector3{f32(x)*Constants.WORLD_SIZE, f32(y)*Constants.WORLD_SIZE, f32(z)*Constants.WORLD_SIZE},
-                        e.transform.scale.x, rl.WHITE if (x == 0 && y == 0 && z == 0) else rl.WHITE)
+                        draw_pos := e.transform.translation + rl.Vector3{f32(x)*Constants.WORLD_SIZE, f32(y)*Constants.WORLD_SIZE, f32(z)*Constants.WORLD_SIZE}
+                        should_draw := point_in_frustum(&game_state.frustum, draw_pos)
+                        if (should_draw) {
+                            rl.DrawModel(asteroid_entity_shape.model, draw_pos, e.transform.scale.x, rl.WHITE)
+                        }
                     }
                 }
             }

@@ -27,6 +27,7 @@ start_game :: proc(game_state: ^Entities.GameState) {
         projection = rl.CameraProjection.PERSPECTIVE,
     }
     game_state.max_asteroids = 0
+    game_state.update_frustum = true
 
     // Spawn player entity.
     player_entity := new(Entities.Entity)
@@ -102,8 +103,8 @@ run_game :: proc(game_state: ^Entities.GameState) -> bool {
 
         update_light_values(game_state.shader_lighting, game_state.sun_light)
 
-        //update_frustum_from_camera(&game_state.camera, f32(game_state.screen_width)/f32(game_state.screen_height),
-        //    &game_state.frustum, game_state)
+        update_frustum_from_camera(&game_state.camera, f32(game_state.screen_width)/f32(game_state.screen_height),
+            &game_state.frustum, game_state)
         draw_world_bounds(game_state)
         draw_player(game_state)
         draw_asteroids(game_state)

@@ -43,7 +43,7 @@ init :: proc() {
         level_tag = Entities.LevelTag.MainMenu,
         score = 0,
         menu_state = UI.new_menu(UI.MainMenuState),
-        draw_distance = 500.0,
+        draw_distance = 300.0,
         mouse_speed = 0.1,
     }
 }
