@@ -1,1 +1,6 @@
+Odin language: https://odin-lang.org/
+Raylib: https://www.raylib.com/
 Raylib lights: https://gist.github.com/laytan/b0eed93e0a03f84d5e4aa97794c8395b
+PSX PS1 Low Poly Asteroids: https://www.fab.com/listings/9bb9f649-83ab-4fd7-8c4c-674b1c211513
+Space Ranger SR1: https://www.fab.com/listings/fd6a9c48-1f01-4bf3-9b78-eadca660ed97
+Ovani sound Dark Ambient Music Pack Vol. 1: https://ovanisound.com/products/dark-ambient-music-pack-vol-1?_pos=1&_psq=Dark+Ambient+Music+Pack+Vol.+1&_ss=e&_v=1.0
