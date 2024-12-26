@@ -5,12 +5,7 @@ import rl "vendor:raylib"
 import "../Entities"
 import "../Constants"
 
-import "../tracy"
-
 draw_asteroids :: proc(game_state: ^Entities.GameState) {
-    when TRACY_ENABLE{
-        tracy.Zone();
-    }
     // Draw asteroids.
     for &e in game_state.entities {
         #partial switch &e_logic in e.logic {

@@ -5,12 +5,7 @@ import rl "vendor:raylib"
 import "../Entities"
 import "../Constants"
 
-import "../tracy"
-
 draw_laser_shots :: proc(game_state: ^Entities.GameState) {
-    when TRACY_ENABLE{
-        tracy.Zone();
-    }
     // Get player entity.
     player_entity := get_player_entity(game_state)
     player_position := player_entity.transform.translation

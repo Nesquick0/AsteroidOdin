@@ -10,9 +10,6 @@ import "Entities"
 import "Systems"
 import "Constants"
 
-import "tracy"
-TRACY_ENABLE :: #config(TRACY_ENABLE, false)
-
 DEFAULT_SCREEN_WIDTH: i32 = 1600
 DEFAULT_SCREEN_HEIGHT: i32 = i32(DEFAULT_SCREEN_WIDTH*9.0/16.0)
 
@@ -26,9 +23,6 @@ main :: proc() {
         context.allocator = mem.tracking_allocator(&track)
 
         defer tracking_allocator(&track)
-    }
-    when TRACY_ENABLE {
-        tracy.SetThreadName("main");
     }
 
     init()
@@ -79,11 +73,6 @@ run :: proc() {
     load_shader(&game_state)
 
     for !rl.WindowShouldClose() {
-        when TRACY_ENABLE{
-            defer tracy.FrameMark()
-        }
-        tracy.ZoneN("Main loop");
-
         rl.BeginDrawing()
         defer rl.EndDrawing()
 
