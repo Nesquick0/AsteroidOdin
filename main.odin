@@ -2,11 +2,13 @@ package main
 
 import "core:fmt"
 import "core:mem"
+import "core:time"
 import rl "vendor:raylib"
 
 import "UI"
 import "Entities"
 import "Systems"
+import "Constants"
 
 import "tracy"
 TRACY_ENABLE :: #config(TRACY_ENABLE, false)
@@ -45,13 +47,14 @@ init :: proc() {
         menu_state = UI.new_menu(UI.MainMenuState),
         draw_distance = 300.0,
         mouse_speed = 0.1,
+        music_volume = 1.0,
     }
 }
 
 load_shader :: proc(game_state: ^Entities.GameState) {
     game_state.shader_lighting = rl.LoadShader(
-        "Data/shaders/lighting.vs",
-        "Data/shaders/lighting.fs")
+        Constants.LIGHTING_VS,
+        Constants.LIGHTING_PS)
     ambient_loc := rl.GetShaderLocation(game_state.shader_lighting, "ambient")
     ambient_color := rl.Vector4{0.1, 0.1, 0.1, 1.0}
     rl.SetShaderValue(game_state.shader_lighting, ambient_loc, &ambient_color, rl.ShaderUniformDataType.VEC4)
@@ -64,6 +67,11 @@ run :: proc() {
     rl.SetConfigFlags({ rl.ConfigFlag.WINDOW_RESIZABLE })
     rl.InitWindow(game_state.screen_width, game_state.screen_height, "Odin Asteroid")
     defer rl.CloseWindow()
+
+    rl.InitAudioDevice()
+    defer rl.CloseAudioDevice()
+
+    rl.SetRandomSeed(u32(time.now()._nsec))
 
     rl.SetExitKey(rl.KeyboardKey.KEY_NULL); // Disable ESC key
     //rl.SetTargetFPS(60)
@@ -96,6 +104,7 @@ run :: proc() {
                 option_menu_state := &game_state.menu_state.derived.(UI.OptionsMenuState)
                 option_menu_state.draw_distance = game_state.draw_distance
                 option_menu_state.mouse_speed = game_state.mouse_speed
+                option_menu_state.music_volume = game_state.music_volume
             case UI.MenuTag.ExitGame:
                 return
             }
@@ -103,6 +112,7 @@ run :: proc() {
             new_menu_Tag : UI.MenuTag = UI.draw_options_menu(&e, game_state.screen_width, game_state.screen_height)
             game_state.draw_distance = e.draw_distance
             game_state.mouse_speed = e.mouse_speed
+            game_state.music_volume = e.music_volume
             #partial switch new_menu_Tag {
             case UI.MenuTag.MainMenu:
                 delete_old_menu(&game_state)
@@ -122,6 +132,9 @@ run :: proc() {
                 game_state.level_tag = Entities.LevelTag.MainMenu
             }
         }
+
+        // Play music.
+        Systems.play_music(&game_state)
     }
 }
 

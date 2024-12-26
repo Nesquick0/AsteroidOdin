@@ -35,7 +35,7 @@ draw_asteroids :: proc(game_state: ^Entities.GameState) {
                 for y in -num_iterations..=num_iterations {
                     for z in -num_iterations..=num_iterations {
                         draw_pos := e.transform.translation + rl.Vector3{f32(x)*Constants.WORLD_SIZE, f32(y)*Constants.WORLD_SIZE, f32(z)*Constants.WORLD_SIZE}
-                        should_draw := point_in_frustum(&game_state.frustum, draw_pos)
+                        should_draw := sphere_in_frustum(&game_state.frustum, draw_pos, asteroid_entity_shape.size)
                         if (should_draw) {
                             rl.DrawModel(asteroid_entity_shape.model, draw_pos, e.transform.scale.x, rl.WHITE)
                         }

@@ -4,7 +4,6 @@ MenuButton :: enum i32 {
     StartGame,
     Options,
     Exit,
-    Count,
 }
 
 MainMenuState :: struct {

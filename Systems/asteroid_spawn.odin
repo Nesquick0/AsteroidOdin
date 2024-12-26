@@ -67,7 +67,7 @@ spawn_asteroid_at_location :: proc(game_state: ^Entities.GameState, location: rl
 
     #partial switch &e_shape in asteroid_entity.shape {
     case Entities.Model:
-        e_shape.model = rl.LoadModel("Data/ps1_style_low_poly_asteroids_gltf/asteroid.glb")
+        e_shape.model = rl.LoadModel(Constants.ASTEROID_MODEL)
         for i in 0..<e_shape.model.materialCount {
             e_shape.model.materials[i].shader = game_state.shader_lighting
         }

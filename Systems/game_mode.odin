@@ -13,7 +13,7 @@ import "../tracy"
 
 start_game :: proc(game_state: ^Entities.GameState) {
     rl.DisableCursor()
-    rl.SetRandomSeed(u32(rl.GetTime()))
+    //rl.SetRandomSeed(u32(rl.GetTime()))
 
     game_state.start_time = rl.GetTime()
     game_state.level_tag = Entities.LevelTag.GameLevel
@@ -38,7 +38,7 @@ start_game :: proc(game_state: ^Entities.GameState) {
     player_entity.transform.scale = rl.Vector3{0.1, 0.0, 0.0}
     #partial switch &shape_model in player_entity.shape {
     case Entities.Model:
-        shape_model.model = rl.LoadModel("Data/space_ranger_sr1_gltf/scene.gltf")
+        shape_model.model = rl.LoadModel(Constants.SPACESHIP_MODEL)
         for i in 0..<shape_model.model.materialCount {
             shape_model.model.materials[i].shader = game_state.shader_lighting
         }
@@ -105,7 +105,9 @@ run_game :: proc(game_state: ^Entities.GameState) -> bool {
 
         update_frustum_from_camera(&game_state.camera, f32(game_state.screen_width)/f32(game_state.screen_height),
             &game_state.frustum, game_state)
-        draw_world_bounds(game_state)
+        when (false) {
+            draw_world_bounds(game_state)
+        }
         draw_player(game_state)
         draw_asteroids(game_state)
         draw_laser_shots(game_state)
@@ -163,8 +165,7 @@ draw_world_bounds :: proc(game_state: ^Entities.GameState) {
     world_center := (max_world_pos - min_world_pos)/2
 
     // Draw 3x larger world bounds
-    when (false)
-    {
+    when (false) {
         num_iterations :: 3
         for x in -num_iterations..=num_iterations {
             for y in -num_iterations..=num_iterations {

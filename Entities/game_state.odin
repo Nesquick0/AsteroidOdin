@@ -14,6 +14,10 @@ GameState :: struct {
     screen_height: i32,
     start_time: f64,
 
+    music: rl.Music,
+    music_index: i32,
+    music_start_time: f64,
+
     level_tag: LevelTag,
     score: i32,
     menu_state: ^UI.BaseMenu,
@@ -21,6 +25,7 @@ GameState :: struct {
 
     draw_distance: f32,
     mouse_speed: f32,
+    music_volume: f32,
 
     camera: rl.Camera,
     camera_angle: rl.Vector2,

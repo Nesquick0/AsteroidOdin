@@ -11,13 +11,13 @@ draw_main_menu :: proc(main_menu_state: ^MainMenuState, screen_width: i32, scree
 
     // Define buttons positions.
     buttons_step : f32 = 60
-    buttons_positions := [i32(MenuButton.Count)]MenuButtonWithText{
+    buttons_positions := [len(MenuButton)]MenuButtonWithText{
         {"Start game", rl.Rectangle{f32(screen_width)/2, f32(screen_height)/2+1*buttons_step, 0, 0}},
         {"Options", rl.Rectangle{f32(screen_width)/2, f32(screen_height)/2+2*buttons_step, 0, 0}},
         {"Exit", rl.Rectangle{f32(screen_width)/2, f32(screen_height)/2+3*buttons_step, 0, 0}},
     }
     // Update buttons size.
-    for i in 0..<i32(MenuButton.Count) {
+    for i in 0..<len(MenuButton) {
         buttons_positions[i].rect.width = f32(rl.MeasureText(buttons_positions[i].text, 50))
         buttons_positions[i].rect.x = f32(buttons_positions[i].rect.x) - buttons_positions[i].rect.width/2
         buttons_positions[i].rect.height = 50
@@ -30,20 +30,20 @@ draw_main_menu :: proc(main_menu_state: ^MainMenuState, screen_width: i32, scree
 
     // Check keyboard input
     if rl.IsKeyPressed(.UP) {
-        main_menu_state.selected_button = MenuButton((i32(main_menu_state.selected_button) - 1) % i32(MenuButton.Count))
+        main_menu_state.selected_button = MenuButton((i32(main_menu_state.selected_button) - 1) % len(MenuButton))
     }
     if rl.IsKeyPressed(.DOWN) {
-        main_menu_state.selected_button = MenuButton((i32(main_menu_state.selected_button) + 1) % i32(MenuButton.Count))
+        main_menu_state.selected_button = MenuButton((i32(main_menu_state.selected_button) + 1) % len(MenuButton))
     }
 
-    for i in 0..<i32(MenuButton.Count) {
+    for i in 0..<len(MenuButton) {
         if rl.CheckCollisionPointRec(mouse_position, buttons_positions[i].rect) {
             main_menu_state.selected_button = MenuButton(i)
         }
     }
 
     // Button activation.
-    button_pressed := rl.IsKeyPressed(.ENTER) || rl.IsMouseButtonPressed(.LEFT)
+    button_pressed := rl.IsKeyPressed(.ENTER) || rl.IsMouseButtonReleased(.LEFT)
     if button_pressed {
         #partial switch main_menu_state.selected_button {
             case MenuButton.StartGame:
@@ -61,7 +61,7 @@ draw_main_menu :: proc(main_menu_state: ^MainMenuState, screen_width: i32, scree
     rl.DrawText(title_str, screen_width/2 - title_size, screen_height/2-200, 100, rl.WHITE)
 
     // Draw buttons.
-    for i in 0..<i32(MenuButton.Count) {
+    for i in 0..<len(MenuButton) {
         button_color := rl.WHITE
         if main_menu_state.selected_button == MenuButton(i) {
             button_color = rl.RED

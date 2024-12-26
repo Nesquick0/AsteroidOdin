@@ -17,13 +17,14 @@ draw_options_menu :: proc(options_menu_state: ^OptionsMenuState, screen_width: i
     rl.DrawText(title_str, screen_width/2 - title_size, screen_height/2-200, 100, rl.WHITE)
 
     // Define buttons positions.
-    buttons_positions := [i32(OptionsMenuButton.Count)]MenuButtonWithText{
+    buttons_positions := [len(OptionsMenuButton)]MenuButtonWithText{
         {"Draw distance", rl.Rectangle{f32(screen_width)/2-250, f32(screen_height)/2, 0, 0}},
         {"Mouse speed", rl.Rectangle{f32(screen_width)/2-250, f32(screen_height)/2+50, 0, 0}},
+        {"Music volume", rl.Rectangle{f32(screen_width)/2-250, f32(screen_height)/2+100, 0, 0}},
         {"Back", rl.Rectangle{f32(screen_width)/2-50, f32(screen_height)-100, 0, 0}},
     }
     // Update buttons size.
-    for i in 0..<i32(OptionsMenuButton.Count) {
+    for i in 0..<len(OptionsMenuButton) {
         buttons_positions[i].rect.width = f32(rl.MeasureText(buttons_positions[i].text, 50))
         buttons_positions[i].rect.x = f32(buttons_positions[i].rect.x) - buttons_positions[i].rect.width/2
         buttons_positions[i].rect.height = 50
@@ -36,20 +37,20 @@ draw_options_menu :: proc(options_menu_state: ^OptionsMenuState, screen_width: i
 
     // Check keyboard input
     if rl.IsKeyPressed(.UP) {
-        options_menu_state.selected_button = OptionsMenuButton((i32(options_menu_state.selected_button) - 1) % i32(OptionsMenuButton.Count))
+        options_menu_state.selected_button = OptionsMenuButton((i32(options_menu_state.selected_button) - 1) % len(OptionsMenuButton))
     }
     if rl.IsKeyPressed(.DOWN) {
-        options_menu_state.selected_button = OptionsMenuButton((i32(options_menu_state.selected_button) + 1) % i32(OptionsMenuButton.Count))
+        options_menu_state.selected_button = OptionsMenuButton((i32(options_menu_state.selected_button) + 1) % len(OptionsMenuButton))
     }
 
-    for i in 0..<i32(OptionsMenuButton.Count) {
+    for i in 0..<len(OptionsMenuButton) {
         if rl.CheckCollisionPointRec(mouse_position, buttons_positions[i].rect) {
             options_menu_state.selected_button = OptionsMenuButton(i)
         }
     }
 
     // Draw buttons.
-    for i in 0..<i32(OptionsMenuButton.Count) {
+    for i in 0..<len(OptionsMenuButton) {
         button_color := rl.WHITE
         if options_menu_state.selected_button == OptionsMenuButton(i) {
             button_color = rl.RED
@@ -84,8 +85,21 @@ draw_options_menu :: proc(options_menu_state: ^OptionsMenuState, screen_width: i
         options_menu_state.mouse_speed = new_mouse_speed
     }
 
+    // Draw music volume slider.
+    {
+        new_music_volume : f32 = options_menu_state.music_volume
+        min_music_volume : f32 = 0.0
+        max_music_volume : f32 = 1.0
+        left_slider_text := rl.TextFormat("%.2f (%.2f)", min_music_volume, new_music_volume)
+        right_slider_text := rl.TextFormat("%.2f", max_music_volume)
+        rl.GuiSlider(rl.Rectangle{f32(screen_width)/2, f32(screen_height)/2+100, 300, 50},
+            left_slider_text, right_slider_text,
+            &new_music_volume, min_music_volume, max_music_volume)
+        options_menu_state.music_volume = new_music_volume
+    }
+
     // Button activation.
-    button_pressed := rl.IsKeyPressed(.ENTER) || rl.IsMouseButtonPressed(.LEFT)
+    button_pressed := rl.IsKeyPressed(.ENTER) || rl.IsMouseButtonReleased(.LEFT)
     if button_pressed {
         #partial switch options_menu_state.selected_button {
         case OptionsMenuButton.Back:
