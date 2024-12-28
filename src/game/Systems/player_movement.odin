@@ -1,6 +1,6 @@
 package Systems
 
-import rl "vendor:raylib"
+import rl "../../../raylib"
 import "../Entities"
 import "../Constants"
 
@@ -41,8 +41,7 @@ system_player_input :: proc(game_state: ^Entities.GameState, delta_time: f32) {
 
     // Update player rotation.
     skip_rotation := rl.IsKeyDown(.LEFT_ALT)
-    if (!skip_rotation)
-    {
+    if (!skip_rotation) {
         player_entity.transform.rotation = rl.QuaternionFromEuler(0.0, -game_state.camera_angle.y, -game_state.camera_angle.x)
     }
 

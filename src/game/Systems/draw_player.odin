@@ -1,6 +1,6 @@
 ﻿package Systems
 
-import rl "vendor:raylib"
+import rl "../../../raylib"
 import "../Entities"
 import "../Constants"
 
@@ -42,8 +42,7 @@ draw_player :: proc(game_state: ^Entities.GameState) {
         }
     }
     // Try to draw fire laser places.
-    when (false)
-    {
+    when (false) {
         world_positionL, world_dirL := get_laser_position(player_entity, Entities.WeaponId.Left)
         rl.DrawSphereWires(world_positionL, 0.1, 8, 8, rl.GREEN)
         world_positionR, world_dirR := get_laser_position(player_entity, Entities.WeaponId.Right)

@@ -1,6 +1,6 @@
 package UI
 
-import rl "vendor:raylib"
+import rl "../../../raylib"
 
 draw_main_menu :: proc(main_menu_state: ^MainMenuState, screen_width: i32, screen_height: i32) -> MenuTag {
     // Clear background
@@ -14,7 +14,7 @@ draw_main_menu :: proc(main_menu_state: ^MainMenuState, screen_width: i32, scree
     buttons_positions := [len(MenuButton)]MenuButtonWithText{
         {"Start game", rl.Rectangle{f32(screen_width)/2, f32(screen_height)/2+1*buttons_step, 0, 0}},
         {"Options", rl.Rectangle{f32(screen_width)/2, f32(screen_height)/2+2*buttons_step, 0, 0}},
-        {"Exit", rl.Rectangle{f32(screen_width)/2, f32(screen_height)/2+3*buttons_step, 0, 0}},
+        //{"Exit", rl.Rectangle{f32(screen_width)/2, f32(screen_height)/2+3*buttons_step, 0, 0}},
     }
     // Update buttons size.
     for i in 0..<len(MenuButton) {
@@ -50,8 +50,8 @@ draw_main_menu :: proc(main_menu_state: ^MainMenuState, screen_width: i32, scree
                 return MenuTag.GameMenu
             case MenuButton.Options:
                 return MenuTag.OptionsMenu
-            case MenuButton.Exit:
-                return MenuTag.ExitGame
+//            case MenuButton.Exit:
+//                return MenuTag.ExitGame
         }
     }
 

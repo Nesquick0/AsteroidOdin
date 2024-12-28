@@ -1,6 +1,6 @@
 ﻿package Entities
 
-import rl "vendor:raylib"
+import rl "../../../raylib"
 
 Light :: struct {
     type: LightType,

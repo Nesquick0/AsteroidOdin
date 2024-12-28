@@ -1,6 +1,6 @@
 ﻿package UI
 
-import rl "vendor:raylib"
+import rl "../../../raylib"
 
 import "../Constants"
 

@@ -1,6 +1,6 @@
 ﻿package Systems
 
-import rl "vendor:raylib"
+import rl "../../../raylib"
 import "../Entities"
 
 MAX_LIGHTS :: 4

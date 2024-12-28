@@ -1,6 +1,6 @@
 ﻿package Constants
 
-import rl "vendor:raylib"
+import rl "../../../raylib"
 import "core:math"
 
 loop_position :: proc(position: rl.Vector3) -> rl.Vector3 {

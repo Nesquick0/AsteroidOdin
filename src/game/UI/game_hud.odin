@@ -1,6 +1,6 @@
 ﻿package UI
 
-import rl "vendor:raylib"
+import rl "../../../raylib"
 
 draw_game_hud :: proc(game_state: ^GameHudState, screen_width: i32, screen_height: i32) -> MenuTag {
     // Check ESC key for exit.

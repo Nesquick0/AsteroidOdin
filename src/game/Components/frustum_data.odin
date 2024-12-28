@@ -1,6 +1,6 @@
 ﻿package Components
 
-import rl "vendor:raylib"
+import rl "../../../raylib"
 
 Plane :: struct {
     normal: rl.Vector3,

@@ -1,7 +1,7 @@
 ﻿#+vet !unused-imports
 package Systems
 
-import rl "vendor:raylib"
+import rl "../../../raylib"
 import "core:math"
 import "../Constants"
 import "../Entities"
@@ -10,7 +10,6 @@ import "core:fmt"
 
 start_game :: proc(game_state: ^Entities.GameState) {
     rl.DisableCursor()
-    //rl.SetRandomSeed(u32(rl.GetTime()))
 
     game_state.start_time = rl.GetTime()
     game_state.level_tag = Entities.LevelTag.GameLevel
@@ -182,5 +181,5 @@ remove_entity_from_game_state :: proc(game_state: ^Entities.GameState, entity: ^
             return
         }
     }
-    fmt.eprintfln("Entity not found in game state.")
+    //fmt.eprintfln("Entity not found in game state.")
 }

@@ -3,7 +3,7 @@ package main
 import "core:fmt"
 import "core:mem"
 import "core:time"
-import rl "vendor:raylib"
+import rl "../../../raylib"
 
 import "UI"
 import "Entities"

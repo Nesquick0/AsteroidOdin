@@ -1,6 +1,6 @@
 ﻿package Systems
 
-import rl "vendor:raylib"
+import rl "../../../raylib"
 import "../Entities"
 import "../Constants"
 import "../Components"
@@ -69,7 +69,6 @@ spawn_laser :: proc(game_state: ^Entities.GameState, start_pos: rl.Vector3, star
     laser_entity.transform.translation = start_pos
     laser_entity.transform.rotation = rl.QuaternionFromEuler(0.0, 0.0, 0.0)
     laser_entity.transform.scale = rl.Vector3{1.0, 0.0, 0.0}
-    //laser_entity.model = rl.LoadModel("Data/laser_gltf/scene.gltf")
     append(&game_state.entities, laser_entity)
     return game_state.entities[len(game_state.entities)-1]
 }
