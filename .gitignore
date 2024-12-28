@@ -1,5 +1,4 @@
 .idea
 .vscode
-bin
-ols.json
-AsteroidOdin.exe
+build/
+build_web/
