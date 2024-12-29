@@ -91,13 +91,13 @@ fini :: proc() {
 
 load_shader :: proc(game_state: ^Entities.GameState) {
     game_state.shader_lighting = rl.LoadShader(
-    Constants.LIGHTING_VS,
-    Constants.LIGHTING_PS)
+        Constants.LIGHTING_VS_100,
+        Constants.LIGHTING_PS_100)
     ambient_loc := rl.GetShaderLocation(game_state.shader_lighting, "ambient")
     ambient_color := rl.Vector4{0.1, 0.1, 0.1, 1.0}
     rl.SetShaderValue(game_state.shader_lighting, ambient_loc, &ambient_color, rl.ShaderUniformDataType.VEC4)
     shine_coef_loc := rl.GetShaderLocation(game_state.shader_lighting, "shineCoef")
-    shine_coef : f32 = 0.5
+    shine_coef : f32 = 16.0
     rl.SetShaderValue(game_state.shader_lighting, shine_coef_loc, &shine_coef, rl.ShaderUniformDataType.FLOAT)
 }
 
