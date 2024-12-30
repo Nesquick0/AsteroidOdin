@@ -15,6 +15,9 @@ draw_game_hud :: proc(game_state: ^GameHudState, screen_width: i32, screen_heigh
         score_text := rl.TextFormat("Score: %d", game_state.score)
         score_text_size := rl.MeasureText(score_text, 20)
         rl.DrawText(score_text, screen_width/2 - score_text_size/2, screen_height/2 + 100, 20, rl.LIME)
+        if (rl.IsKeyPressed(.ENTER)) {
+            return MenuTag.MainMenu
+        }
         return MenuTag.GameMenu
     }
 
