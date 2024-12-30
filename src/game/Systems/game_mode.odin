@@ -183,3 +183,14 @@ remove_entity_from_game_state :: proc(game_state: ^Entities.GameState, entity: ^
     }
     //fmt.eprintfln("Entity not found in game state.")
 }
+
+get_player_entity :: proc(game_state: ^Entities.GameState) -> ^Entities.Entity {
+// Iterate all entities until correct one found.
+    for e in game_state.entities {
+        #partial switch &e_logic in e.logic {
+        case Entities.Player:
+            return e
+        }
+    }
+    return nil
+}

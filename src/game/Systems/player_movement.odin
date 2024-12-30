@@ -42,29 +42,12 @@ system_player_input :: proc(game_state: ^Entities.GameState, delta_time: f32) {
     // Update player rotation.
     skip_rotation := rl.IsKeyDown(.LEFT_ALT)
     if (!skip_rotation) {
-        player_entity.transform.rotation = rl.QuaternionFromEuler(0.0, -game_state.camera_angle.y, -game_state.camera_angle.x)
+        //player_entity.transform.rotation = rl.QuaternionFromEuler(0.0, -game_state.camera_angle.x, game_state.camera_angle.y)
+        player_entity.transform.rotation = rl.QuaternionFromAxisAngle(rl.Vector3{0.0, 1.0, 0.0}, -game_state.camera_angle.x) // Rotate around Y axis (up)
+        player_entity.transform.rotation *= rl.QuaternionFromAxisAngle(rl.Vector3{0.0, 0.0, 1.0}, game_state.camera_angle.y) // Rotate around Z axis (right)
+        player_entity.transform.rotation = rl.QuaternionNormalize(player_entity.transform.rotation)
     }
 
     //rl.DrawText(vec3_to_string("Pos ", player_entity.transform.translation), 10, 40, 10, rl.WHITE)
     //rl.DrawText(vec3_to_string("Vel ", player_entity.velocity), 10, 50, 10, rl.WHITE)
-}
-
-get_player_entity :: proc(game_state: ^Entities.GameState) -> ^Entities.Entity {
-    // Iterate all entities until correct one found.
-    for e in game_state.entities {
-        #partial switch &e_logic in e.logic {
-        case Entities.Player:
-            return e
-        }
-    }
-    return nil
-}
-
-get_player_model_matrix :: proc(player_entity: ^Entities.Entity) -> rl.Matrix {
-    rotation_matrix := rl.QuaternionToMatrix(player_entity.transform.rotation)
-    rotation_matrix = rl.MatrixLookAt(
-    rl.Vector3{0.0, 0.0, 0.0},
-    rl.Vector3{0.0, 1.0, 0.0},
-    rl.Vector3{0.0, 0.0, 1.0}) * rotation_matrix
-    return rotation_matrix
 }
