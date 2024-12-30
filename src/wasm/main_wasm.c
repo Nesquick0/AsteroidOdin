@@ -14,7 +14,7 @@ extern void game_frame();
 
 #define WIDTH 1280
 #define HEIGHT 720
-#define TITLE "Jam"
+#define TITLE "Odin Asteroid"
 
 #define Byte 1
 #define Kilobyte 1024 * Byte
