@@ -10,7 +10,7 @@ draw_laser_shots :: proc(game_state: ^Entities.GameState) {
     player_entity := get_player_entity(game_state)
     player_position := player_entity.transform.translation
 
-    laser_shot_size :: Constants.WORLD_SIZE*0.02
+    laser_shot_size :: Constants.WORLD_SIZE*0.01
 
     // Draw laser shots.
     for &e in game_state.entities {
