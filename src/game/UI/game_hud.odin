@@ -8,6 +8,11 @@ draw_game_hud :: proc(game_state: ^GameHudState, screen_width: i32, screen_heigh
         return MenuTag.MainMenu
     }
 
+    // Safety check when cursor is "unlocked" from game.
+    if (rl.IsMouseButtonPressed(.LEFT) && rl.IsCursorOnScreen()) {
+        rl.DisableCursor()
+    }
+
     // Game is over.
     if (game_state.game_over) {
         rl.DrawText("Game Over", screen_width/2 - rl.MeasureText("Game Over", 100)/2, screen_height/2, 100, rl.RED)
